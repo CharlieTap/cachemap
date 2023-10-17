@@ -1,0 +1,12 @@
+name: Pull Request and Merge Workflow
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    with:
+      runner: macos-latest
