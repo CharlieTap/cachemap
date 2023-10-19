@@ -11,7 +11,7 @@ class LeftRight<T : Any>(
     constructor: () -> T,
     readerParallelism: Int = 100,
     @PublishedApi internal val switch: AtomicBoolean = atomic(LEFT),
-    internal val allEpochs: Array<AtomicInt> = Array(readerParallelism) { atomic(0) },
+    internal val allEpochs: Array<CacheAlignedMemfencedInt> = Array(readerParallelism) { CacheAlignedMemfencedInt.factory(0) },
     internal val readEpochCount: AtomicInt = atomic(0),
     internal val readEpochIdx: ThreadLocal<Int> = ThreadLocal { readEpochCount.getAndIncrement() },
     internal val left: T = constructor(),
@@ -24,9 +24,9 @@ class LeftRight<T : Any>(
 
     @PublishedApi
     internal val readSide get() = if (switch.value == LEFT) left else right
+
     @PublishedApi
     internal val writeSide get() = if (switch.value == LEFT) right else left
-
 
     inline fun <V> mutate(crossinline update: (T) -> V): V {
         return writeMutex.withLock {

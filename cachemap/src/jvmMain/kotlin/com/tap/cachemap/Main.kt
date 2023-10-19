@@ -7,7 +7,21 @@ import kotlinx.atomicfu.atomic
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.seconds
 
-fun main() {
+enum class Action {
+    BENCHMARK_CACHE_MAP,
+    BENCHMARK_CONTROL,
+    BENCHMARK_BOTH,
+}
+
+fun parseAction(args: Array<String>): Action = when {
+    args.isEmpty() -> Action.BENCHMARK_BOTH
+    args[0] == "cachemap" -> Action.BENCHMARK_CACHE_MAP
+    args[0] == "controlmap" -> Action.BENCHMARK_CONTROL
+    else -> Action.BENCHMARK_BOTH
+}
+
+fun main(args: Array<String>) {
+    val action = parseAction(args)
     val benchmarkDuration = 3.seconds
 
     val key = "key"
@@ -39,21 +53,25 @@ fun main() {
         Unit
     }
 
-    benchmark(
-        benchmarkDuration,
-        threadPoolSize,
-        cacheMapReadOperation,
-        cacheMapWriteOperation,
-        bias,
-    )
+    if (action != Action.BENCHMARK_CONTROL) {
+        benchmark(
+            benchmarkDuration,
+            threadPoolSize,
+            cacheMapReadOperation,
+            cacheMapWriteOperation,
+            bias,
+        )
+    }
 
-//    benchmark(
-//        benchmarkDuration,
-//        threadPoolSize,
-//        controlReadOperation,
-//        controlWriteOperation,
-//        bias,
-//    )
+    if (action != Action.BENCHMARK_CACHE_MAP) {
+        benchmark(
+            benchmarkDuration,
+            threadPoolSize,
+            controlReadOperation,
+            controlWriteOperation,
+            bias,
+        )
+    }
 
     println("Cachemap reads: ${cacheMapReads.value}")
     println("Cachemap writes: ${cacheMapWrites.value}")
