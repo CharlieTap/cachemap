@@ -4,7 +4,6 @@ pluginManagement {
         google()
         mavenCentral()
     }
-    includeBuild("gradle/plugins/versions-conventions")
 }
 
 plugins {
