@@ -2,8 +2,8 @@ package com.tap.cachemap.benchmark
 
 import kotlinx.atomicfu.AtomicInt
 
-fun <K,V> readOperation(
-    map: Map<K,V>,
+fun <K, V> readOperation(
+    map: Map<K, V>,
     counter: AtomicInt,
     key: K,
 ): () -> Unit {

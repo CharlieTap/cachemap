@@ -3,9 +3,9 @@ package com.tap.cachemap
 import com.tap.cachemap.benchmark.ReadBias
 import com.tap.cachemap.benchmark.benchmark
 import com.tap.cachemap.benchmark.readOperation
+import kotlinx.atomicfu.atomic
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.atomicfu.atomic
 
 fun main() {
     val benchmarkDuration = 3.seconds
@@ -47,13 +47,13 @@ fun main() {
         bias,
     )
 
-    benchmark(
-        benchmarkDuration,
-        threadPoolSize,
-        controlReadOperation,
-        controlWriteOperation,
-        bias,
-    )
+//    benchmark(
+//        benchmarkDuration,
+//        threadPoolSize,
+//        controlReadOperation,
+//        controlWriteOperation,
+//        bias,
+//    )
 
     println("Cachemap reads: ${cacheMapReads.value}")
     println("Cachemap writes: ${cacheMapWrites.value}")

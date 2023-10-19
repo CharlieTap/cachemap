@@ -17,10 +17,11 @@ fun benchmark(
     val startMark = TimeSource.Monotonic.markNow() + duration
     val biasRange = 1..readBias.amount
     while (startMark.hasNotPassedNow()) {
-
-        val operation  = if(Random.nextInt(1,101) in biasRange) {
+        val operation = if (Random.nextInt(1, 101) in biasRange) {
             readOperation
-        } else writeOperation
+        } else {
+            writeOperation
+        }
 
         executor.submit(operation)
     }

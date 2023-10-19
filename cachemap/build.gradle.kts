@@ -11,6 +11,34 @@ plugins {
 group = "com.tap.cachemap"
 version = libs.versions.version.name.get()
 
+val mainClassName = "com.tap.cachemap.MainKt" // replace with your actual main class name
+
+// Add a task to create a 'fat' JAR - one that includes all dependencies needed for runtime.
+val fatJar = tasks.register<Jar>("fatJar") {
+    // Basic metadata and configuration
+    archiveBaseName.set("cachemap-all")
+    archiveVersion.set("0.1")
+
+    // Setting the main class name for the manifest
+    manifest {
+        attributes["Main-Class"] = mainClassName
+    }
+
+    // Here's the important part: correctly gathering the compiled classes and resources
+    from(kotlin.targets["jvm"].compilations["main"].output.allOutputs)
+
+    val jvmRuntimeClasspath by configurations
+    from({
+        jvmRuntimeClasspath.map { if (it.isDirectory) it else zipTree(it) }
+    })
+    // Avoiding issues with files with the same name, like different META-INF files from different libraries
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.build {
+    dependsOn(fatJar)
+}
+
 
 kotlin {
 
