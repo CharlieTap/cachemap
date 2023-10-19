@@ -11,25 +11,29 @@ import kotlinx.coroutines.yield
 class SuspendLeftRight<T : Any>(
     constructor: () -> T,
     readerParallelism: Int = 64,
-    internal val switch: AtomicBoolean = atomic(LEFT),
+    @PublishedApi internal val switch: AtomicBoolean = atomic(LEFT),
     internal val allEpochs: Array<AtomicInt> = Array(readerParallelism) { atomic(0) },
     internal val readEpochCount: AtomicInt = atomic(0),
     internal val readEpochIdx: ThreadLocal<Int> = ThreadLocal { readEpochCount.getAndIncrement() },
     internal val left: T = constructor(),
     internal val right: T = constructor(),
-    internal val writeMutex: Mutex = Mutex(),
+    @PublishedApi internal val writeMutex: Mutex = Mutex(),
 ) {
 
+    @PublishedApi
     internal val readEpoch get() = allEpochs[readEpochIdx.value]
 
+    @PublishedApi
     internal val readSide get() = if (switch.value == LEFT) left else right
+
+    @PublishedApi
     internal val writeSide get() = if (switch.value == LEFT) right else left
 
-    suspend fun <V> mutate(update: (T) -> V): V {
+    suspend inline fun <V> mutate(crossinline update: (T) -> V): V {
         return writeMutex.withLock {
             update(writeSide)
 
-            swap(switch)
+            switch.update { !it }
 
             waitForReaders()
 
@@ -37,7 +41,7 @@ class SuspendLeftRight<T : Any>(
         }
     }
 
-    fun <V> read(action: (T) -> V): V {
+    inline fun <V> read(crossinline action: (T) -> V): V {
         readEpoch.incrementAndGet()
 
         return action(readSide).also {
@@ -45,7 +49,8 @@ class SuspendLeftRight<T : Any>(
         }
     }
 
-    private suspend fun waitForReaders() {
+    @PublishedApi
+    internal suspend fun waitForReaders() {
         val activeThreads = readEpochCount.value
 
         // filter those that are odd because this signifies that they are mid-read
@@ -80,9 +85,5 @@ class SuspendLeftRight<T : Any>(
     companion object {
         internal const val LEFT = true
         internal const val RIGHT = false
-
-        private fun swap(switch: AtomicBoolean) {
-            switch.update { !it }
-        }
     }
 }
