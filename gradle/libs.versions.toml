@@ -29,6 +29,7 @@ kotlinter = "3.15.0"
 kot-compile-testing = "1.5.0"
 
 kotlinx-atomic-fu = "0.21.0"
+kotlinx-benchmark = "0.4.9"
 kotlinx-coroutines = "1.7.3"
 kotlinx-datetime = "0.4.0"
 kotlinx-serialization = "1.5.1"
@@ -51,7 +52,9 @@ android = { id = "com.android.application", version.ref = "android-build-tools-p
 android-lib = { id = "com.android.library", version.ref = "android-build-tools-plugin" }
 android-test = { id = "com.android.test", version.ref = "android-build-tools-plugin" }
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref="dependency-analysis" }
+kotlin-allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-benchmark = { id = "org.jetbrains.kotlinx.benchmark", version.ref = "kotlinx-benchmark" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -84,6 +87,7 @@ kotlin-reflection = { module = "org.jetbrains.kotlin:kotlin-reflect", version.re
 kotlin-symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp"}
 
 kotlinx-atomic-fu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "kotlinx-atomic-fu"}
+kotlinx-benchmark = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlinx-benchmark"}
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime"}
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization"}
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines"}
