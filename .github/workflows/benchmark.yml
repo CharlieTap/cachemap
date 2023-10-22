@@ -19,6 +19,8 @@ on:
 jobs:
   build:
     runs-on: ${{ inputs.runner }}
+    permissions:
+      contents: write
     steps:
 
       - name: Clone Repo

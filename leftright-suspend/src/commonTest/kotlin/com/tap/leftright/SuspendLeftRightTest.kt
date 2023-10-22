@@ -15,7 +15,7 @@ class SuspendLeftRightTest {
 
     @Test
     fun `ensure thread local index local increments the total epoch count`() {
-        val allEpochs = Array(1) { atomic(0) }
+        val allEpochs = Array(1) { PaddedVolatileInt(0) }
 
         val totalEpochCount = atomic(0)
 
@@ -35,7 +35,7 @@ class SuspendLeftRightTest {
     @Test
     fun `ensure a read increments the relevant epoch counter by 2`() {
         val expectedResult = 117
-        val allEpochs = Array(1) { atomic(0) }
+        val allEpochs = Array(1) { PaddedVolatileInt(0) }
 
         val suspendLeftRight = SuspendLeftRight(
             constructor = { expectedResult },
@@ -52,7 +52,7 @@ class SuspendLeftRightTest {
     fun `ensure a write updates the switch`() = runTest {
         val expectedResult = mutableSetOf(1, 2)
         val switch = atomic(LEFT)
-        val allEpochs = Array(1) { atomic(0) }
+        val allEpochs = Array(1) { PaddedVolatileInt(0) }
 
         val suspendLeftRight = SuspendLeftRight(
             constructor = { mutableSetOf(1) },

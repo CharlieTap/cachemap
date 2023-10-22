@@ -12,7 +12,7 @@ class SuspendLeftRight<T : Any>(
     constructor: () -> T,
     readerParallelism: Int = 64,
     @PublishedApi internal val switch: AtomicBoolean = atomic(LEFT),
-    internal val allEpochs: Array<AtomicInt> = Array(readerParallelism) { atomic(0) },
+    internal val allEpochs: Array<PaddedVolatileInt> = Array(readerParallelism) { PaddedVolatileInt(0) },
     internal val readEpochCount: AtomicInt = atomic(0),
     internal val readEpochIdx: ThreadLocal<Int> = ThreadLocal { readEpochCount.getAndIncrement() },
     internal val left: T = constructor(),
