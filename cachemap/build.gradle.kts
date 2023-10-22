@@ -3,13 +3,25 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.allopen)
     alias(libs.plugins.kotlin.atomic.fu)
+    alias(libs.plugins.kotlin.benchmark)
     alias(libs.plugins.kotlinter)
     id("maven-publish")
 }
 
 group = "com.tap.cachemap"
 version = libs.versions.version.name.get()
+
+allOpen {
+    annotation("org.openjdk.jmh.annotations.State")
+}
+
+benchmark {
+    targets {
+        register("jvmBenchmark")
+    }
+}
 
 
 kotlin {
@@ -28,7 +40,9 @@ kotlin {
     }
 
     targets {
-        jvm()
+        jvm {
+            val benchmark by compilations.creating
+        }
     }
 
     sourceSets {
@@ -37,6 +51,7 @@ kotlin {
             dependencies {
                 implementation(projects.leftright)
                 implementation(libs.kotlinx.atomic.fu)
+                implementation(libs.kotlinx.benchmark)
             }
         }
 
@@ -50,6 +65,10 @@ kotlin {
             dependencies {
 
             }
+        }
+
+        val jvmBenchmark by getting {
+            dependsOn(jvmMain)
         }
     }
 }
