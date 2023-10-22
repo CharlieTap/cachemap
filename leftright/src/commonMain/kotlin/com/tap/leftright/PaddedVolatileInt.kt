@@ -1,6 +1,6 @@
 package com.tap.leftright
 
-class PaddedVolatileInteger(initialValue: Int) {
+class PaddedVolatileInt(initialValue: Int) {
 
     @Volatile private var p1: Long = 0
 
@@ -30,7 +30,7 @@ class PaddedVolatileInteger(initialValue: Int) {
 
     @Volatile private var p14: Long = 0
 
-    @Volatile var value : Int = initialValue
+    @Volatile var value: Int = initialValue
 
     fun get(): Int {
         return value
@@ -45,4 +45,3 @@ class PaddedVolatileInteger(initialValue: Int) {
         return value
     }
 }
-
