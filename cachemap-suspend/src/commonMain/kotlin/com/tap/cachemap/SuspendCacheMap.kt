@@ -13,10 +13,10 @@ fun <K, V> suspendCacheMapOf(): SuspendCacheMap<K, V> {
     return InternalCacheMap()
 }
 
-fun <K, V> suspendCacheMapOf(initialCapacity: Int): SuspendCacheMap<K, V> {
-    return InternalCacheMap(initialCapacity)
-}
-
 fun <K, V> suspendCacheMapOf(vararg args: Pair<K, V>): SuspendCacheMap<K, V> {
     return InternalCacheMap(initialPopulation = args.toMap())
+}
+
+fun <K, V> suspendCacheMapOf(readerParallelism: Int, initialCapacity: Int, initialPopulation: Map<K, V>): SuspendCacheMap<K, V> {
+    return InternalCacheMap(readerParallelism, initialCapacity, initialPopulation)
 }

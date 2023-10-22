@@ -3,11 +3,16 @@ package com.tap.cachemap
 import com.tap.leftright.LeftRight
 
 internal class InternalCacheMap<K, V>(
+    readerParallelism: Int? = null,
     initialCapacity: Int? = null,
     initialPopulation: Map<K, V>? = null,
 ) : Map<K, V>, CacheMap<K, V> {
 
-    private val inner = constructor(initialCapacity, initialPopulation)
+    private val inner = constructor(
+        readerParallelism,
+        initialCapacity,
+        initialPopulation,
+    )
 
     override val entries: Set<Map.Entry<K, V>>
         get() = inner.read(MutableMap<K, V>::entries)
@@ -77,9 +82,12 @@ internal class InternalCacheMap<K, V>(
 
     companion object {
         fun <K, V> constructor(
+            readerParallelism: Int? = null,
             capacity: Int? = null,
             population: Map<K, V>? = null,
-        ): LeftRight<MutableMap<K, V>> = if (capacity == null && population == null) {
+        ): LeftRight<MutableMap<K, V>> = if (
+            readerParallelism == null && capacity == null && population == null
+        ) {
             LeftRight(::mutableMapOf)
         } else {
             val constructor = {
@@ -89,7 +97,11 @@ internal class InternalCacheMap<K, V>(
                     HashMap<K, V>(population)
                 }
             }
-            LeftRight(constructor)
+            if (readerParallelism != null) {
+                LeftRight(constructor, readerParallelism)
+            } else {
+                LeftRight(constructor)
+            }
         }
     }
 }

@@ -14,14 +14,10 @@ fun <K, V> cacheMapOf(): CacheMap<K, V> {
     return InternalCacheMap()
 }
 
-fun <K, V> cacheMapOf(initialCapacity: Int): CacheMap<K, V> {
-    return InternalCacheMap(initialCapacity)
+fun <K, V> cacheMapOf(vararg args: Pair<K, V>): CacheMap<K, V> {
+    return InternalCacheMap<K, V>(initialPopulation = args.toMap())
 }
 
-fun <K, V> cacheMapOf(vararg args: Pair<K, V>): CacheMap<K, V> {
-    return InternalCacheMap<K, V>().apply {
-        args.forEach {
-            put(it.first, it.second)
-        }
-    }
+fun <K, V> cacheMapOf(readerParallelism: Int, initialCapacity: Int, initialPopulation: Map<K, V>): CacheMap<K, V> {
+    return InternalCacheMap(readerParallelism, initialCapacity, initialPopulation)
 }

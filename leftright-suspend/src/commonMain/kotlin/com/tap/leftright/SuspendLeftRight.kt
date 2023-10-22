@@ -10,7 +10,7 @@ import kotlinx.coroutines.yield
 
 class SuspendLeftRight<T : Any>(
     constructor: () -> T,
-    readerParallelism: Int = 64,
+    readerParallelism: Int = readerParallelism(),
     @PublishedApi internal val switch: AtomicBoolean = atomic(LEFT),
     internal val allEpochs: Array<PaddedVolatileInt> = Array(readerParallelism) { PaddedVolatileInt(0) },
     internal val readEpochCount: AtomicInt = atomic(0),
