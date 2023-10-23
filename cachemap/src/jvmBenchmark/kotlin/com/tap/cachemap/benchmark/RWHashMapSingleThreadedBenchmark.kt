@@ -87,7 +87,6 @@ class RWHashMapSingleThreadedBenchmark {
     @Benchmark
     fun stressTest(blackhole: Blackhole) {
         for (i in 1..1000) {
-
             val putResult = rwLock.write {
                 map.put("newKey$i", "newValue$i")
             }
