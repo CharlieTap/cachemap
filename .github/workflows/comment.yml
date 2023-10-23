@@ -9,5 +9,5 @@ jobs:
     permissions:
       contents: write
     with:
-      runner: macos-latest
+      runner: macos-13
     uses: ./.github/workflows/benchmark.yml

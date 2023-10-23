@@ -6,14 +6,14 @@ on:
       runner:
         type: string
         description: 'The machine runner the workflow should run on'
-        default: macos-latest
+        default: macos-13
         required: false
   workflow_dispatch:
     inputs:
       runner:
         type: string
         description: 'The machine runner the workflow should run on'
-        default: macos-latest
+        default: macos-13
         required: true
 
 jobs:
