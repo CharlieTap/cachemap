@@ -41,7 +41,7 @@ class SuspendLeftRight<T : Any>(
         }
     }
 
-    inline fun <V> read(crossinline action: (T) -> V): V {
+    inline fun <V> read(action: (T) -> V): V {
         readEpoch.incrementAndGet()
 
         return action(readSide).also {
