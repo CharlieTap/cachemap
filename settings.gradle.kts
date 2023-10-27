@@ -4,6 +4,7 @@ pluginManagement {
         google()
         mavenCentral()
     }
+    includeBuild("gradle/plugins/publishing")
 }
 
 plugins {
@@ -24,8 +25,6 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         mavenLocal()
-        maven(url = "https://jitpack.io" )
-
     }
 }
 

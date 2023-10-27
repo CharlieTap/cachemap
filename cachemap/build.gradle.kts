@@ -7,11 +7,14 @@ plugins {
     alias(libs.plugins.kotlin.atomic.fu)
     alias(libs.plugins.kotlin.benchmark)
     alias(libs.plugins.kotlinter)
-    id("maven-publish")
+    id("com.tap.publishing")
 }
 
-group = "com.tap.cachemap"
-version = libs.versions.version.name.get()
+publishingConfig {
+    name = "cachemap"
+    description = "A read optimised concurrent map for Kotlin Multiplatform"
+    version = libs.versions.version.name.get()
+}
 
 allOpen {
     annotation("org.openjdk.jmh.annotations.State")

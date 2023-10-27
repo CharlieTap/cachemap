@@ -1,8 +1,8 @@
 [versions]
 
-version-name = "0.1"
+version-name = "0.1.0"
 
-java-compiler-version = "21"
+java-compiler-version = "17"
 java-bytecode-version = "11"
 java-vendor = "amazon"
 

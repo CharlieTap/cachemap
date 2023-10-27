@@ -5,11 +5,14 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.atomic.fu)
     alias(libs.plugins.kotlinter)
-    id("maven-publish")
+    id("com.tap.publishing")
 }
 
-group = "com.tap.cachemap"
-version = libs.versions.version.name.get()
+publishingConfig {
+    name = "cachemap-suspend"
+    description = "A read optimised concurrent map for Kotlin Multiplatform with coroutines support"
+    version = libs.versions.version.name.get()
+}
 
 
 kotlin {
