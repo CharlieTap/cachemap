@@ -29,6 +29,7 @@ dependencyResolutionManagement {
     }
 }
 
+include(":benchmark")
 include(":cachemap")
 include(":cachemap-suspend")
 include(":leftright")

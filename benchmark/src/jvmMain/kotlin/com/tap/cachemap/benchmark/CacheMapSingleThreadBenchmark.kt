@@ -1,5 +1,5 @@
 package com.tap.cachemap.benchmark
-
+import com.tap.cachemap.cacheMapOf
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.BenchmarkMode
 import org.openjdk.jmh.annotations.Fork
@@ -12,8 +12,8 @@ import org.openjdk.jmh.annotations.State
 import org.openjdk.jmh.annotations.TearDown
 import org.openjdk.jmh.annotations.Warmup
 import org.openjdk.jmh.infra.Blackhole
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
+import org.openjdk.jmh.annotations.Level
 
 @State(Scope.Benchmark)
 @Fork(value = BenchmarkConfig.FORKS)
@@ -21,14 +21,14 @@ import java.util.concurrent.TimeUnit
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Warmup(iterations = BenchmarkConfig.WARMUP_ITERATIONS, time = 1, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = BenchmarkConfig.MEASUREMENT_ITERATIONS, time = 1, timeUnit = TimeUnit.SECONDS)
-class ConcurrentHashMapSingleThreadedBenchmark {
+class CacheMapSingleThreadBenchmark {
 
-    private val cacheMap = ConcurrentHashMap<String, String>()
+    private val cacheMap = cacheMapOf<String, String>()
 
-    @Setup
+    @Setup(Level.Iteration)
     fun setup() {
         for (i in 1..1000) {
-            cacheMap["key$i"] = "value$i"
+            cacheMap.put("key$i", "value$i")
         }
     }
 
@@ -47,8 +47,8 @@ class ConcurrentHashMapSingleThreadedBenchmark {
     @Benchmark
     fun putAll(blackhole: Blackhole) {
         val anotherMap = mapOf("Hello" to "World", "SecondKey" to "SecondValue")
-        cacheMap.putAll(anotherMap)
-        blackhole.consume(anotherMap)
+        val result = cacheMap.putAll(anotherMap)
+        blackhole.consume(result)
     }
 
     @Benchmark
@@ -83,7 +83,7 @@ class ConcurrentHashMapSingleThreadedBenchmark {
         }
     }
 
-    @TearDown
+    @TearDown(Level.Iteration)
     fun tearDown() {
         cacheMap.clear()
     }

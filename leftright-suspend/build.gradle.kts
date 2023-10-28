@@ -36,14 +36,14 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(projects.leftrightShared)
-                implementation(libs.kotlinx.atomic.fu)
-                implementation(libs.kotlinx.coroutines.core)
+                api(libs.kotlinx.atomic.fu)
+                api(libs.kotlinx.coroutines.core)
             }
         }
 
         val commonTest by getting {
             dependencies {
-                implementation(kotlin("test"))
+                implementation(libs.kotlin.test)
                 implementation(libs.kotlinx.coroutines.test)
             }
         }

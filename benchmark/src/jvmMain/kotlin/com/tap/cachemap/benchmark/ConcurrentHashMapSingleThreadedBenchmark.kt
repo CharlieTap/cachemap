@@ -12,10 +12,9 @@ import org.openjdk.jmh.annotations.State
 import org.openjdk.jmh.annotations.TearDown
 import org.openjdk.jmh.annotations.Warmup
 import org.openjdk.jmh.infra.Blackhole
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.locks.ReentrantReadWriteLock
-import kotlin.concurrent.read
-import kotlin.concurrent.write
+import org.openjdk.jmh.annotations.Level
 
 @State(Scope.Benchmark)
 @Fork(value = BenchmarkConfig.FORKS)
@@ -23,89 +22,70 @@ import kotlin.concurrent.write
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Warmup(iterations = BenchmarkConfig.WARMUP_ITERATIONS, time = 1, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = BenchmarkConfig.MEASUREMENT_ITERATIONS, time = 1, timeUnit = TimeUnit.SECONDS)
-class RWHashMapSingleThreadedBenchmark {
+class ConcurrentHashMapSingleThreadedBenchmark {
 
-    private val map = HashMap<String, String>()
-    private val rwLock = ReentrantReadWriteLock()
+    private val cacheMap = ConcurrentHashMap<String, String>()
 
-    @Setup
+    @Setup(Level.Iteration)
     fun setup() {
         for (i in 1..1000) {
-            map["key$i"] = "value$i"
+            cacheMap["key$i"] = "value$i"
         }
     }
 
     @Benchmark
     fun put(blackhole: Blackhole) {
-        val result = rwLock.write {
-            map.put("Hello", "World")
-        }
+        val result = cacheMap.put("Hello", "World")
         blackhole.consume(result)
     }
 
     @Benchmark
     fun overwrite(blackhole: Blackhole) {
-        val result = rwLock.write {
-            map.put("key1", "value2")
-        }
+        val result = cacheMap.put("key1", "value2")
         blackhole.consume(result)
     }
 
     @Benchmark
     fun putAll(blackhole: Blackhole) {
         val anotherMap = mapOf("Hello" to "World", "SecondKey" to "SecondValue")
-        rwLock.write {
-            map.putAll(anotherMap)
-        }
+        cacheMap.putAll(anotherMap)
         blackhole.consume(anotherMap)
     }
 
     @Benchmark
     fun get(blackhole: Blackhole) {
-        val result: String? = rwLock.read {
-            map["key1"]
-        }
+        val result: String? = cacheMap["key1"]
         blackhole.consume(result)
     }
 
     @Benchmark
     fun getMiss(blackhole: Blackhole) {
-        val result: String? = rwLock.read {
-            map["Hello"]
-        }
+        val result: String? = cacheMap["Hello"]
         blackhole.consume(result)
     }
 
     @Benchmark
     fun remove(blackhole: Blackhole) {
-        val result = rwLock.write {
-            map.remove("key1")
-        }
+        val result = cacheMap.remove("key1")
         blackhole.consume(result)
     }
 
     @Benchmark
     fun stressTest(blackhole: Blackhole) {
         for (i in 1..1000) {
-            val putResult = rwLock.write {
-                map.put("newKey$i", "newValue$i")
-            }
+            val putResult = cacheMap.put("newKey$i", "newValue$i")
             blackhole.consume(putResult)
 
-            val getResult: String? = rwLock.read {
-                map["key$i"]
-            }
+            val getResult: String? = cacheMap["key$i"]
             blackhole.consume(getResult)
 
-            val removeResult = rwLock.write {
-                map.remove("newKey$i")
-            }
+            val removeResult = cacheMap.remove("newKey$i")
             blackhole.consume(removeResult)
         }
     }
 
-    @TearDown
+    @TearDown(Level.Iteration)
     fun tearDown() {
-        map.clear()
+        cacheMap.clear()
     }
 }
