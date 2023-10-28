@@ -2,7 +2,7 @@ package com.tap.cachemap
 
 import com.tap.leftright.SuspendLeftRight as LeftRight
 
-internal class InternalCacheMap<K, V>(
+internal class InternalSuspendCacheMap<K, V>(
     readerParallelism: Int? = null,
     initialCapacity: Int? = null,
     initialPopulation: Map<K, V>? = null,

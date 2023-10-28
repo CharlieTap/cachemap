@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.allopen)
     alias(libs.plugins.kotlin.atomic.fu)
-    alias(libs.plugins.kotlin.benchmark)
     alias(libs.plugins.kotlinter)
     id("maven-publish")
 }
@@ -16,13 +15,6 @@ version = libs.versions.version.name.get()
 allOpen {
     annotation("org.openjdk.jmh.annotations.State")
 }
-
-benchmark {
-    targets {
-        register("jvmBenchmark")
-    }
-}
-
 
 kotlin {
 
@@ -40,9 +32,7 @@ kotlin {
     }
 
     targets {
-        jvm {
-            val benchmark by compilations.creating
-        }
+        jvm()
     }
 
     sourceSets {
@@ -57,7 +47,7 @@ kotlin {
 
         val commonTest by getting {
             dependencies {
-                implementation(kotlin("test"))
+                implementation(libs.kotlin.test)
             }
         }
 
@@ -65,10 +55,6 @@ kotlin {
             dependencies {
 
             }
-        }
-
-        val jvmBenchmark by getting {
-            dependsOn(jvmMain)
         }
     }
 }

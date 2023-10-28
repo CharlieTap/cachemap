@@ -2,7 +2,7 @@
 
 version-name = "0.1"
 
-java-compiler-version = "21"
+java-compiler-version = "17"
 java-bytecode-version = "11"
 java-vendor = "amazon"
 
@@ -85,6 +85,7 @@ kotlin-poet-core = { module = "com.squareup:kotlinpoet", version.ref = "kpoet"}
 kotlin-poet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kpoet"}
 kotlin-reflection = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin"}
 kotlin-symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp"}
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin"}
 
 kotlinx-atomic-fu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "kotlinx-atomic-fu"}
 kotlinx-benchmark = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlinx-benchmark"}

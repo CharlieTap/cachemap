@@ -3,9 +3,22 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.allopen)
     alias(libs.plugins.kotlin.atomic.fu)
+    alias(libs.plugins.kotlin.benchmark)
     alias(libs.plugins.kotlinter)
 }
+
+allOpen {
+    annotation("org.openjdk.jmh.annotations.State")
+}
+
+benchmark {
+    targets {
+        register("jvm")
+    }
+}
+
 
 kotlin {
 
@@ -23,14 +36,20 @@ kotlin {
     }
 
     targets {
-        jvm()
+        jvm {
+            val benchmark by compilations.creating
+        }
     }
 
     sourceSets {
 
         val commonMain by getting {
             dependencies {
+                implementation(projects.cachemap)
+                implementation(projects.cachemapSuspend)
                 implementation(libs.kotlinx.atomic.fu)
+                implementation(libs.kotlinx.benchmark)
+                implementation(libs.kotlinx.coroutines.core)
             }
         }
 
