@@ -7,7 +7,7 @@ jobs:
   derive-branch:
     runs-on: ubuntu-latest
     outputs:
-      branch: ${{ steps.set-output.outputs.value }}
+      branch: ${{ steps.set-output.outputs.branch }}
     steps:
       - id: set-output
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
