@@ -4,21 +4,22 @@ on:
     types: [created, edited, deleted]
 
 jobs:
-  benchmark:
-    if: github.event.issue.pull_request && contains(github.event.comment.body, '/benchmark')
-    runs-on: macos-13
-    permissions:
-      contents: write
+  derive-branch:
+    runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.set-output.outputs.value }}
     steps:
-
-      - name: Derive branch name
-        id: derive-branch
-        shell: bash
+      - id: set-output
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
 
-      - name: Run Benchmark
-        with:
-          runner: macos-13
-          branch: ${{ steps.derive-branch.outputs.branch }}
-          should-commit-benchmark: true
-        uses: ./.github/workflows/benchmark.yml
+  benchmark:
+    needs: derive-branch
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/benchmark')
+    permissions:
+      contents: write
+    with:
+      runner: macos-13
+      branch: ${{ needs.derive-branch.outputs.branch }}
+      should-commit-benchmark: true
+    uses: ./.github/workflows/benchmark.yml
+

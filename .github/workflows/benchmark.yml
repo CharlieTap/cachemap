@@ -68,7 +68,7 @@ jobs:
 
       - name: Move benchmark files
         run: |
-          mkdir -p ./benchmark/reports
+          mkdir -p benchmark/reports
           find benchmark -type f \( -iname '*benchmark.json' -o -iname '*benchmark.csv' \) -exec mv {} ./benchmark/reports/ \;
 
       - name: Commit benchmark files
