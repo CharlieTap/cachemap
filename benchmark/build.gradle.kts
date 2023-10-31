@@ -50,6 +50,7 @@ kotlin {
                 implementation(libs.kotlinx.atomic.fu)
                 implementation(libs.kotlinx.benchmark)
                 implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.immutable.collections)
             }
         }
 
