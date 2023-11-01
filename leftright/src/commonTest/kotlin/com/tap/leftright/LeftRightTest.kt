@@ -15,7 +15,7 @@ class LeftRightTest {
 
         val totalEpochCount = atomic(0)
 
-        val suspendLeftRight = LeftRight(
+        val leftRight = LeftRight(
             constructor = { 0 },
             allEpochs = allEpochs,
             readEpochCount = totalEpochCount,
@@ -23,9 +23,9 @@ class LeftRightTest {
 
         assertEquals(0, allEpochs[0].value)
         assertEquals(0, totalEpochCount.value) // before idx access is zero
-        assertEquals(0, suspendLeftRight.readEpochIdx.value) // idx access
+        assertEquals(0, leftRight.readEpochIdx.value) // idx access
         assertEquals(1, totalEpochCount.value) // after idx access is incremented
-        assertEquals(0, suspendLeftRight.readEpoch.value) // ensure read epoch count is at zero
+        assertEquals(0, leftRight.readEpoch.value) // ensure read epoch count is at zero
     }
 
     @Test
@@ -33,12 +33,12 @@ class LeftRightTest {
         val expectedResult = 117
         val allEpochs = Array(1) { PaddedVolatileInt(0) }
 
-        val suspendLeftRight = LeftRight(
+        val leftRight = LeftRight(
             constructor = { expectedResult },
             allEpochs = allEpochs,
         )
 
-        val result = suspendLeftRight.read { it }
+        val result = leftRight.read { it }
 
         assertEquals(2, allEpochs[0].value)
         assertEquals(expectedResult, result)
@@ -50,23 +50,23 @@ class LeftRightTest {
         val switch = atomic(LEFT)
         val allEpochs = Array(1) { PaddedVolatileInt(0) }
 
-        val suspendLeftRight = LeftRight(
+        val leftRight = LeftRight(
             constructor = { mutableSetOf(1) },
             allEpochs = allEpochs,
             switch = switch,
         )
 
-        val readSide = suspendLeftRight.readSide
-        val writeSide = suspendLeftRight.writeSide
+        val readSide = leftRight.readSide
+        val writeSide = leftRight.writeSide
 
-        val result = suspendLeftRight.mutate { it.add(2) }
+        val result = leftRight.mutate { it.add(2) }
 
         assertEquals(true, result)
         assertEquals(0, allEpochs[0].value)
         assertEquals(RIGHT, switch.value) // assert the switch changed
-        assertSame(readSide, suspendLeftRight.writeSide) // assert the pointers have switched sides
-        assertSame(writeSide, suspendLeftRight.readSide) // assert the pointers have switched sides
-        assertEquals(expectedResult, suspendLeftRight.left)
-        assertEquals(expectedResult, suspendLeftRight.right)
+        assertSame(readSide, leftRight.writeSide) // assert the pointers have switched sides
+        assertSame(writeSide, leftRight.readSide) // assert the pointers have switched sides
+        assertEquals(expectedResult, leftRight.left)
+        assertEquals(expectedResult, leftRight.right)
     }
 }

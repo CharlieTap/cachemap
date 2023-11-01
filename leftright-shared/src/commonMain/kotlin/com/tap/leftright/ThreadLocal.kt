@@ -1,5 +1,7 @@
 package com.tap.leftright
 
-expect class ThreadLocal<T>(initializer: () -> T) {
+interface ThreadLocal<T> {
     var value: T
 }
+
+expect fun <T> threadLocal(initializer: () -> T): ThreadLocal<T>
