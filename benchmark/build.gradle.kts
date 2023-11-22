@@ -22,6 +22,10 @@ benchmark {
 
 kotlin {
 
+    jvm {
+        val benchmark by compilations.creating
+    }
+
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(libs.versions.java.compiler.version.get().toInt()))
         vendor.set(JvmVendorSpec.matching(libs.versions.java.vendor.get()))
@@ -35,15 +39,9 @@ kotlin {
         }
     }
 
-    targets {
-        jvm {
-            val benchmark by compilations.creating
-        }
-    }
-
     sourceSets {
 
-        val commonMain by getting {
+       commonMain {
             dependencies {
                 implementation(projects.cachemap)
                 implementation(projects.cachemapSuspend)
@@ -53,13 +51,13 @@ kotlin {
             }
         }
 
-        val commonTest by getting {
+        commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
             }
         }
 
-        val jvmMain by getting {
+        jvmMain {
             dependencies {
 
             }

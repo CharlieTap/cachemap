@@ -111,6 +111,11 @@ scope.launch {
 }
 ```
 
+## Additional Reading
+
+- [Making my concurrent algo 6000% better](https://dev.to/charlietap/making-my-concurrent-algorithm-6000-better-24oo)
+
+
 ## License
 
 This project is dual-licensed under both the MIT and Apache 2.0 licenses. You can choose which one you want to use the software under.

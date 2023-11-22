@@ -1,22 +1,19 @@
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.allopen)
     alias(libs.plugins.kotlin.atomic.fu)
     alias(libs.plugins.kotlinter)
+    alias(libs.plugins.dokka)
     id("maven-publish")
-}
-
-group = "com.tap.cachemap"
-version = libs.versions.version.name.get()
-
-allOpen {
-    annotation("org.openjdk.jmh.annotations.State")
+    id("signing")
 }
 
 kotlin {
+
+    jvm()
 
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(libs.versions.java.compiler.version.get().toInt()))
@@ -31,32 +28,102 @@ kotlin {
         }
     }
 
-    targets {
-        jvm()
-    }
-
     sourceSets {
 
-        val commonMain by getting {
+       commonMain {
             dependencies {
                 implementation(projects.leftright)
-                implementation(libs.kotlinx.atomic.fu)
-                implementation(libs.kotlinx.benchmark)
             }
         }
 
-        val commonTest by getting {
+        commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
             }
         }
 
-        val jvmMain by getting {
+        jvmMain {
             dependencies {
 
             }
         }
     }
+}
+
+val dokkaHtml by tasks.getting(org.jetbrains.dokka.gradle.DokkaTask::class)
+
+val javadocJar: TaskProvider<Jar> by tasks.registering(Jar::class) {
+    dependsOn(dokkaHtml)
+    archiveClassifier.set("javadoc")
+    from(dokkaHtml.outputDirectory)
+}
+
+tasks.withType<AbstractPublishToMaven>().configureEach {
+    val signingTasks = tasks.withType<Sign>()
+    mustRunAfter(signingTasks)
+}
+
+tasks.withType<DokkaTask>().configureEach {
+    notCompatibleWithConfigurationCache("https://github.com/Kotlin/dokka/issues/2231")
+}
+
+publishing {
+
+    val manualFileRepo = uri("file://${rootProject.layout.buildDirectory.get()}/manual")
+
+    repositories {
+        maven {
+            name = "manual"
+            url = manualFileRepo
+        }
+    }
+
+    publications.withType<MavenPublication>().configureEach {
+
+        groupId = "io.github.charlietap"
+        artifactId = project.name
+        version = libs.versions.version.name.get()
+
+        artifact(javadocJar)
+
+        pom {
+            name.set(project.name)
+            description.set("A read optimised concurrent map for Kotlin Multiplatform")
+            url.set("https://github.com/CharlieTap/cachemap")
+            licenses {
+                license {
+                    name.set("Apache-2.0")
+                    url.set("https://www.apache.org/licenses/LICENSE-2.0")
+                }
+                license {
+                    name.set("MIT")
+                    url.set("https://opensource.org/licenses/MIT")
+                }
+            }
+            developers {
+                developer {
+                    id.set("CharlieTap")
+                    name.set("Charlie Tapping")
+                }
+            }
+            scm {
+                connection.set("scm:git:https://github.com/CharlieTap/cachemap.git")
+                developerConnection.set("scm:git:ssh://github.com/CharlieTap/cachemap.git")
+                url.set("https://github.com/CharlieTap/cachemap")
+            }
+        }
+    }
+}
+
+signing {
+    val signingKey: String? by project
+    val signingPassword: String? by project
+
+    if(signingKey != null) {
+        useInMemoryPgpKeys(signingKey, signingPassword)
+    }
+
+    sign(project.extensions.getByType<PublishingExtension>().publications)
 }
 
 tasks.withType<KotlinCompile>().configureEach {

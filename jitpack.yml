@@ -1,3 +1,0 @@
-before_install:
-  - sdk install java 21.0.1-amzn
-  - sdk use java java 21.0.1-amzn

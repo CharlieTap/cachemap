@@ -1,6 +1,6 @@
 [versions]
 
-version-name = "0.1"
+version-name = "0.2.2"
 
 java-compiler-version = "17"
 java-bytecode-version = "11"
@@ -15,6 +15,7 @@ autoservice-annotations = "1.1.1"
 autoservice-ksp = "1.1.0"
 
 dependency-analysis="1.18.0"
+dokka="1.9.10"
 
 faker = "1.14.0"
 
@@ -52,6 +53,7 @@ android = { id = "com.android.application", version.ref = "android-build-tools-p
 android-lib = { id = "com.android.library", version.ref = "android-build-tools-plugin" }
 android-test = { id = "com.android.test", version.ref = "android-build-tools-plugin" }
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref="dependency-analysis" }
+dokka = { id = "org.jetbrains.dokka", version.ref="dokka" }
 kotlin-allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-benchmark = { id = "org.jetbrains.kotlinx.benchmark", version.ref = "kotlinx-benchmark" }
