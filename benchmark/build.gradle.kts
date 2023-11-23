@@ -19,12 +19,9 @@ benchmark {
     }
 }
 
-
 kotlin {
 
-    jvm {
-        val benchmark by compilations.creating
-    }
+    jvm()
 
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(libs.versions.java.compiler.version.get().toInt()))

@@ -1,5 +1,9 @@
 # cachemap
 
+![badge][badge-jvm]
+
+---
+
 CacheMap is single writer concurrent hashmap implementation.
 
 Reads from the hashmap can proceed concurrently to writes from any thread with zero coordination necessary... No locks
@@ -12,6 +16,15 @@ as exposing MutableEntry's would allow mutation without the necessary write coor
 
 CacheMap is ultimately a thin wrapper around the [left-right concurrency primitive](#leftright).
 
+# Setup
+
+```kotlin
+dependencies {
+    implementation("io.github.charlietap:cachemap:0.2.3")
+    // Or
+    implementation("io.github.charlietap:cachemap-suspend:0.2.3")
+}
+```
 
 # Usage
 
@@ -77,6 +90,16 @@ by imposing a max parallelism invariant and leveraging ThreadLocal state.
 
 You can also find what I believe to be the first paper on the primitive [here](https://hal.science/hal-01207881/document).
 
+# Setup
+
+```kotlin
+dependencies {
+    implementation("io.github.charlietap:leftright:0.2.3")
+    // Or
+    implementation("io.github.charlietap:leftright-suspend:0.2.3")
+}
+```
+
 # Usage
 
 LeftRight is generic over any given datastructure and can be constructed like so
@@ -122,3 +145,5 @@ This project is dual-licensed under both the MIT and Apache 2.0 licenses. You ca
 
 - For details on the MIT license, please see the [LICENSE-MIT](LICENSE-MIT) file.
 - For details on the Apache 2.0 license, please see the [LICENSE-APACHE](LICENSE-APACHE) file.
+
+[badge-jvm]: http://img.shields.io/badge/-jvm-DB413D.svg?style=flat
