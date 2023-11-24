@@ -42,21 +42,21 @@ class LeftRightJVMTest {
             writeMutex = writeMutex,
         )
 
-        assertEquals(0, leftRight.readEpoch.value)
+        assertEquals(0, leftRight.readEpoch.value())
         writeMutex.lock()
 
         var result: MutableSet<Int>? = null
         var epoch = 0
         val routine = Thread {
             result = leftRight.read { it }
-            epoch = leftRight.readEpoch.value
+            epoch = leftRight.readEpoch.value()
         }
         routine.run {
             start()
             join()
         }
         assertEquals(mutableSetOf(1), result)
-        assertEquals(0, leftRight.readEpoch.value) // first threads epoch remains
+        assertEquals(0, leftRight.readEpoch.value()) // first threads epoch remains
         assertEquals(2, epoch) // spawned threads epoch increments
         writeMutex.unlock()
     }
@@ -88,7 +88,7 @@ class LeftRightJVMTest {
         routine1.join()
         routine2.join()
 
-        assertEquals(2, leftRight.allEpochs[0].value)
-        assertEquals(2, leftRight.allEpochs[1].value)
+        assertEquals(2, leftRight.allEpochs[0].value())
+        assertEquals(2, leftRight.allEpochs[1].value())
     }
 }
