@@ -1,0 +1,35 @@
+language = C
+package = libcounter
+---
+#include <stdalign.h>
+
+#if defined(__x86_64__) || defined(__aarch64__) || defined(_ARCH_PPC64)
+#define CACHE_LINE_SIZE 128
+#elif defined(__arm__) || defined(__mips__) || defined(__mips64) || \
+      defined(__riscv) || defined(__sparc__) || defined(__hexagon__)
+#define CACHE_LINE_SIZE 32
+#elif defined(__m68k__)
+#define CACHE_LINE_SIZE 16
+#elif defined(__s390x__)
+#define CACHE_LINE_SIZE 256
+#else
+#define CACHE_LINE_SIZE 64
+#endif
+
+typedef struct {
+    alignas(CACHE_LINE_SIZE) char padding[CACHE_LINE_SIZE];
+} CachePadded;
+
+typedef struct {
+    CachePadded pad;
+    int value;
+} CacheAlignedInt;
+
+int increment_counter(CacheAlignedInt* counter) {
+    counter->value += 1;
+    return counter->value;
+}
+
+int get_counter_value(CacheAlignedInt* counter) {
+    return counter->value;
+}

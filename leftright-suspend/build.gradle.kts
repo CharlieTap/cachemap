@@ -14,6 +14,7 @@ plugins {
 kotlin {
 
     jvm()
+    macosArm64()
 
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(libs.versions.java.compiler.version.get().toInt()))

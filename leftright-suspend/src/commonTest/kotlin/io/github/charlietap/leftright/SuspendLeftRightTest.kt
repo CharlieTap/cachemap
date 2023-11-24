@@ -15,7 +15,7 @@ class SuspendLeftRightTest {
 
     @Test
     fun `ensure thread local index local increments the total epoch count`() {
-        val allEpochs = Array(1) { PaddedVolatileInt(0) }
+        val allEpochs = Array(1) { counter(0) }
 
         val totalEpochCount = atomic(0)
 
@@ -25,17 +25,17 @@ class SuspendLeftRightTest {
             readEpochCount = totalEpochCount,
         )
 
-        assertEquals(0, allEpochs[0].value)
+        assertEquals(0, allEpochs[0].value())
         assertEquals(0, totalEpochCount.value) // before idx access is zero
-        assertEquals(0, suspendLeftRight.readEpochIdx.value) // idx access
+        assertEquals(0, suspendLeftRight.readEpochIdx.value()) // idx access
         assertEquals(1, totalEpochCount.value) // after idx access is incremented
-        assertEquals(0, suspendLeftRight.readEpoch.value) // ensure read epoch count is at zero
+        assertEquals(0, suspendLeftRight.readEpoch.value()) // ensure read epoch count is at zero
     }
 
     @Test
     fun `ensure a read increments the relevant epoch counter by 2`() {
         val expectedResult = 117
-        val allEpochs = Array(1) { PaddedVolatileInt(0) }
+        val allEpochs = Array(1) { counter(0) }
 
         val suspendLeftRight = SuspendLeftRight(
             constructor = { expectedResult },
@@ -44,7 +44,7 @@ class SuspendLeftRightTest {
 
         val result = suspendLeftRight.read { it }
 
-        assertEquals(2, allEpochs[0].value)
+        assertEquals(2, allEpochs[0].value())
         assertEquals(expectedResult, result)
     }
 
@@ -52,7 +52,7 @@ class SuspendLeftRightTest {
     fun `ensure a write updates the switch`() = runTest {
         val expectedResult = mutableSetOf(1, 2)
         val switch = atomic(LEFT)
-        val allEpochs = Array(1) { PaddedVolatileInt(0) }
+        val allEpochs = Array(1) { counter(0) }
 
         val suspendLeftRight = SuspendLeftRight(
             constructor = { mutableSetOf(1) },
@@ -66,7 +66,7 @@ class SuspendLeftRightTest {
         val result = suspendLeftRight.mutate { it.add(2) }
 
         assertEquals(true, result)
-        assertEquals(0, allEpochs[0].value)
+        assertEquals(0, allEpochs[0].value())
         assertEquals(RIGHT, switch.value) // assert the switch changed
         assertSame(readSide, suspendLeftRight.writeSide) // assert the pointers have switched sides
         assertSame(writeSide, suspendLeftRight.readSide) // assert the pointers have switched sides
@@ -107,14 +107,14 @@ class SuspendLeftRightTest {
             writeMutex = writeMutex,
         )
 
-        assertEquals(0, suspendLeftRight.readEpoch.value)
+        assertEquals(0, suspendLeftRight.readEpoch.value())
         writeMutex.lock()
         val routine = async {
             suspendLeftRight.read { it }
         }
         val result = routine.await()
         assertEquals(mutableSetOf(1), result)
-        assertEquals(2, suspendLeftRight.readEpoch.value) // Note coroutines lets us run on the same thread
+        assertEquals(2, suspendLeftRight.readEpoch.value()) // Note coroutines lets us run on the same thread
         writeMutex.unlock()
     }
 }

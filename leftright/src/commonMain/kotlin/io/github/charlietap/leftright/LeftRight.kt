@@ -4,23 +4,24 @@ import kotlinx.atomicfu.AtomicBoolean
 import kotlinx.atomicfu.AtomicInt
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.locks.ReentrantLock
+import kotlinx.atomicfu.locks.reentrantLock
+import kotlinx.atomicfu.locks.withLock
 import kotlinx.atomicfu.update
-import kotlin.concurrent.withLock
 
 class LeftRight<T : Any>(
     constructor: () -> T,
     readerParallelism: Int = readerParallelism(),
     @PublishedApi internal val switch: AtomicBoolean = atomic(LEFT),
-    internal val allEpochs: Array<PaddedVolatileInt> = Array(readerParallelism) { PaddedVolatileInt(0) },
+    internal val allEpochs: Array<CacheAlignedCounter> = Array(readerParallelism) { counter(0) },
     internal val readEpochCount: AtomicInt = atomic(0),
-    internal val readEpochIdx: ThreadLocal<Int> = threadLocal { readEpochCount.getAndIncrement() },
+    internal val readEpochIdx: ReadEpochIndex = readEpochIndex { readEpochCount.getAndIncrement() },
     internal val left: T = constructor(),
     internal val right: T = constructor(),
-    @PublishedApi internal val writeMutex: ReentrantLock = ReentrantLock(),
+    @PublishedApi internal val writeMutex: ReentrantLock = reentrantLock(),
 ) {
 
     @PublishedApi
-    internal val readEpoch get() = allEpochs[readEpochIdx.value]
+    internal val readEpoch get() = allEpochs[readEpochIdx.value()]
 
     @PublishedApi
     internal val readSide get() = if (switch.value == LEFT) left else right
@@ -41,10 +42,10 @@ class LeftRight<T : Any>(
     }
 
     inline fun <V> read(action: (T) -> V): V {
-        readEpoch.incrementAndGet()
+        readEpoch.increment()
 
         return action(readSide).also {
-            readEpoch.incrementAndGet()
+            readEpoch.increment()
         }
     }
 
@@ -56,7 +57,7 @@ class LeftRight<T : Any>(
         // this is a little inefficient as it could also filter readers that are on the correct side but mid-read
         // Its unclear whether the computational effort of filtering these out would have any meaningful impact
         val activeIndices = (0 until activeThreads).fold(mutableListOf<Pair<Int, Int>>()) { acc, idx ->
-            val epoch = allEpochs[idx].value
+            val epoch = allEpochs[idx].value()
             acc.apply {
                 if (epoch % 2 != 0) {
                     acc.add(idx to epoch)
@@ -72,8 +73,8 @@ class LeftRight<T : Any>(
                 iterations = 0
                 yield()
             } else {
-                activeIndices.removeIf { (allEpochsIdx, epoch) ->
-                    epoch != allEpochs[allEpochsIdx].value
+                activeIndices.removeAll { (allEpochsIdx, epoch) ->
+                    epoch != allEpochs[allEpochsIdx].value()
                 }
             }
 

@@ -15,17 +15,21 @@ kotlin {
 
     jvm()
 
+    setOf(
+        macosArm64(),
+    ).forEach {
+        it.compilations.getByName("main") {
+            cinterops {
+                val libcounter by creating {
+                    defFile(project.file("src/ffi/cinterop/libcounter.def"))
+                }
+            }
+        }
+    }
+
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(libs.versions.java.compiler.version.get().toInt()))
         vendor.set(JvmVendorSpec.matching(libs.versions.java.vendor.get()))
-    }
-
-    targets.configureEach {
-        compilations.configureEach {
-            kotlinOptions {
-
-            }
-        }
     }
 
     sourceSets {
@@ -37,12 +41,6 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
-            }
-        }
-
-        jvmMain {
-            dependencies {
-
             }
         }
     }

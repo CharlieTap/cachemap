@@ -1,6 +1,6 @@
 package io.github.charlietap.leftright
 
-class PaddedVolatileInt(initialValue: Int) {
+class JvmCacheAlignedCounter(initialValue: Int) : CacheAlignedCounter {
 
     @Volatile private var p1: Long = 0
 
@@ -32,16 +32,14 @@ class PaddedVolatileInt(initialValue: Int) {
 
     @Volatile var value: Int = initialValue
 
-    fun get(): Int {
+    override fun value(): Int {
         return value
     }
 
-    fun set(newValue: Int) {
-        value = newValue
-    }
-
-    fun incrementAndGet(): Int {
+    override fun increment(): Int {
         value += 1
         return value
     }
 }
+
+actual fun counter(initial: Int): CacheAlignedCounter = JvmCacheAlignedCounter(initial)
