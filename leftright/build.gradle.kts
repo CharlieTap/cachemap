@@ -21,14 +21,6 @@ kotlin {
         vendor.set(JvmVendorSpec.matching(libs.versions.java.vendor.get()))
     }
 
-    targets.configureEach {
-        compilations.configureEach {
-            kotlinOptions {
-
-            }
-        }
-    }
-
     sourceSets {
 
        commonMain {
@@ -48,6 +40,10 @@ kotlin {
             dependencies {
 
             }
+        }
+
+        nativeTest {
+            languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
         }
     }
 }

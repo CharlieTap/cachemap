@@ -5,13 +5,15 @@ import kotlin.native.concurrent.ThreadLocal
 @ThreadLocal
 private var idx: Int? = null
 
-actual fun readEpochIndex(initializer: () -> Int): ReadEpochIndex {
-    return object : ReadEpochIndex {
-        override fun value(): Int {
-            if (idx == null) {
-                idx = initializer()
-            }
-            return idx!!
+private class NativeReadEpochIndex(val initializer: () -> Int) : ReadEpochIndex {
+    override fun value(): Int {
+        if (idx == null) {
+            idx = initializer()
         }
+        return idx!!
     }
+}
+
+actual fun readEpochIndex(initializer: () -> Int): ReadEpochIndex {
+    return NativeReadEpochIndex(initializer)
 }
