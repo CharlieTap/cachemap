@@ -17,8 +17,8 @@ package = libcounter
 #endif
 
 typedef struct {
-    alignas(CACHE_LINE_SIZE) char padding[CACHE_LINE_SIZE - sizeof(int)];
-    int value;
+    alignas(CACHE_LINE_SIZE) int value;
+    char padding[CACHE_LINE_SIZE - (sizeof(int) % CACHE_LINE_SIZE)];
 } CacheAlignedInt;
 
 int increment_counter(CacheAlignedInt* counter) {
