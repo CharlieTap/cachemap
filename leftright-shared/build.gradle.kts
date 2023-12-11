@@ -9,14 +9,18 @@ plugins {
     alias(libs.plugins.dokka)
     id("maven-publish")
     id("signing")
+    id("kmp-conventions")
 }
 
 kotlin {
 
-    jvm()
-
     setOf(
         macosArm64(),
+        macosX64(),
+        iosArm64(),
+        iosX64(),
+        linuxArm64(),
+        linuxX64(),
     ).forEach {
         it.compilations.getByName("main") {
             cinterops {
@@ -27,13 +31,7 @@ kotlin {
         }
     }
 
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(libs.versions.java.compiler.version.get().toInt()))
-        vendor.set(JvmVendorSpec.matching(libs.versions.java.vendor.get()))
-    }
-
     sourceSets {
-
        commonMain {
             dependencies {}
         }

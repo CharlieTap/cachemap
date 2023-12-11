@@ -28,7 +28,7 @@ kpoet = "1.14.2"
 kotlinter = "3.15.0"
 kot-compile-testing = "1.5.0"
 
-kotlinx-atomic-fu = "0.21.0"
+kotlinx-atomic-fu = "0.23.1"
 kotlinx-benchmark = "0.4.10"
 kotlinx-coroutines = "1.7.3"
 kotlinx-datetime = "0.4.0"
@@ -114,7 +114,7 @@ uuid = { module = "com.benasher44:uuid", version.ref = "uuid"}
 
 gradle-versions-plugin = { module = "com.github.ben-manes:gradle-versions-plugin", version.ref = "versions-plugin" }
 kotlinter-plugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }
-
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
 [bundles]
 

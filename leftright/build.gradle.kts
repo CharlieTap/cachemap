@@ -9,17 +9,10 @@ plugins {
     alias(libs.plugins.dokka)
     id("maven-publish")
     id("signing")
+    id("kmp-conventions")
 }
 
 kotlin {
-
-    jvm()
-    macosArm64()
-
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(libs.versions.java.compiler.version.get().toInt()))
-        vendor.set(JvmVendorSpec.matching(libs.versions.java.vendor.get()))
-    }
 
     sourceSets {
 
