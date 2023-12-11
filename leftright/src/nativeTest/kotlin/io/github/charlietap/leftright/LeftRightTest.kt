@@ -38,7 +38,7 @@ class LeftRightNativeTest {
         val writeMutex = reentrantLock()
 
         val leftRight = LeftRight(
-            constructor = { mutableSetOf(1) }, // freeze the state so it can be shared between workers
+            constructor = { mutableSetOf(1) },
             writeMutex = writeMutex,
         )
 
