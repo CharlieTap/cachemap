@@ -1,6 +1,10 @@
 # cachemap
 
+![badge][badge-android]
 ![badge][badge-jvm]
+![badge][badge-ios]
+![badge][badge-linux]
+![badge][badge-mac]
 
 ---
 
@@ -146,4 +150,8 @@ This project is dual-licensed under both the MIT and Apache 2.0 licenses. You ca
 - For details on the MIT license, please see the [LICENSE-MIT](LICENSE-MIT) file.
 - For details on the Apache 2.0 license, please see the [LICENSE-APACHE](LICENSE-APACHE) file.
 
+[badge-android]: http://img.shields.io/badge/-android-6EDB8D.svg?style=flat
 [badge-jvm]: http://img.shields.io/badge/-jvm-DB413D.svg?style=flat
+[badge-linux]: http://img.shields.io/badge/-linux-2D3F6C.svg?style=flat
+[badge-ios]: http://img.shields.io/badge/-ios-CDCDCD.svg?style=flat
+[badge-mac]: http://img.shields.io/badge/-macos-111111.svg?style=flat
