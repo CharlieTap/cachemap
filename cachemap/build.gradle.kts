@@ -81,7 +81,6 @@ publishing {
     publications.withType<MavenPublication>().configureEach {
 
         groupId = "io.github.charlietap"
-        artifactId = project.name
         version = libs.versions.version.name.get()
 
         artifact(javadocJar)

@@ -70,6 +70,9 @@ tasks.withType<DokkaTask>().configureEach {
     notCompatibleWithConfigurationCache("https://github.com/Kotlin/dokka/issues/2231")
 }
 
+group = "io.github.charlietap"
+version = libs.versions.version.name.get()
+
 publishing {
 
     val manualFileRepo = uri("file://${rootProject.layout.buildDirectory.get()}/manual")
@@ -82,10 +85,6 @@ publishing {
     }
 
     publications.withType<MavenPublication>().configureEach {
-
-        groupId = "io.github.charlietap"
-        artifactId = project.name
-        version = libs.versions.version.name.get()
 
         artifact(javadocJar)
 
