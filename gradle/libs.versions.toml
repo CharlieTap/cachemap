@@ -1,6 +1,6 @@
 [versions]
 
-version-name = "0.2.2"
+version-name = "0.2.4"
 
 java-compiler-version = "17"
 java-bytecode-version = "11"
@@ -112,6 +112,7 @@ sqldelight-jvm-driver = { module = "app.cash.sqldelight:sqlite-driver", version.
 sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 uuid = { module = "com.benasher44:uuid", version.ref = "uuid"}
 
+dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 gradle-versions-plugin = { module = "com.github.ben-manes:gradle-versions-plugin", version.ref = "versions-plugin" }
 kotlinter-plugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

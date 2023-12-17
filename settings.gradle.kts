@@ -6,6 +6,7 @@ pluginManagement {
     }
 
     includeBuild("gradle/plugins/kmp-conventions")
+    includeBuild("gradle/plugins/publishing-conventions")
 }
 
 plugins {
