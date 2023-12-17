@@ -68,7 +68,13 @@ internal class InternalSuspendCacheMap<K, V>(
 
     override suspend fun remove(key: K, value: V): Boolean {
         return inner.mutate { map ->
-            map.remove(key, value)
+            val mapValue = map[key]
+            if (value == mapValue) {
+                map.remove(key)
+                true
+            } else {
+                false
+            }
         }
     }
 
@@ -87,8 +93,10 @@ internal class InternalSuspendCacheMap<K, V>(
             val constructor = {
                 if (capacity != null) {
                     HashMap<K, V>(capacity)
-                } else {
+                } else if (population != null) {
                     HashMap<K, V>(population)
+                } else {
+                    HashMap<K, V>()
                 }
             }
             if (readerParallelism != null) {

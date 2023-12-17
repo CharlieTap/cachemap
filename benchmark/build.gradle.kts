@@ -11,17 +11,20 @@ plugins {
 
 allOpen {
     annotation("org.openjdk.jmh.annotations.State")
+    annotation("kotlinx.benchmark.State")
 }
 
 benchmark {
     targets {
         register("jvm")
+//        register("macosArm64")
     }
 }
 
 kotlin {
 
     jvm()
+    macosArm64()
 
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(libs.versions.java.compiler.version.get().toInt()))
