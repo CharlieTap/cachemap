@@ -24,9 +24,9 @@ CacheMap is ultimately a thin wrapper around the [left-right concurrency primiti
 
 ```kotlin
 dependencies {
-    implementation("io.github.charlietap:cachemap:0.2.3")
+    implementation("io.github.charlietap:cachemap:0.2.4")
     // Or
-    implementation("io.github.charlietap:cachemap-suspend:0.2.3")
+    implementation("io.github.charlietap:cachemap-suspend:0.2.4")
 }
 ```
 
@@ -98,9 +98,9 @@ You can also find what I believe to be the first paper on the primitive [here](h
 
 ```kotlin
 dependencies {
-    implementation("io.github.charlietap:leftright:0.2.3")
+    implementation("io.github.charlietap:leftright:0.2.4")
     // Or
-    implementation("io.github.charlietap:leftright-suspend:0.2.3")
+    implementation("io.github.charlietap:leftright-suspend:0.2.4")
 }
 ```
 
