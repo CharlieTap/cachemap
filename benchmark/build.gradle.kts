@@ -17,7 +17,7 @@ allOpen {
 benchmark {
     targets {
         register("jvm")
-//        register("macosArm64")
+        register("macosArm64")
     }
 }
 

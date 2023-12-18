@@ -15,7 +15,7 @@ import kotlinx.benchmark.TearDown
 import kotlinx.benchmark.Warmup
 
 @State(Scope.Benchmark)
-@BenchmarkMode(Mode.AverageTime, Mode.Throughput)
+@BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(BenchmarkTimeUnit.NANOSECONDS)
 @Warmup(iterations = BenchmarkConfig.WARMUP_ITERATIONS)
 @Measurement(iterations = BenchmarkConfig.MEASUREMENT_ITERATIONS, time = 1, timeUnit = BenchmarkTimeUnit.SECONDS)
