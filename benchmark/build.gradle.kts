@@ -1,5 +1,20 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+// temp fix for benchmark embedded compiler bug
+buildscript {
+    configurations.all {
+        resolutionStrategy {
+            eachDependency {
+                if (requested.group == "org.jetbrains.kotlin") {
+                    val kv = libs.versions.kotlin.get()
+                    logger.warn("${requested.group}:${requested.name}:${requested.version} --> $kv")
+                    useVersion(kv)
+                }
+            }
+        }
+    }
+}
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
@@ -17,7 +32,7 @@ allOpen {
 benchmark {
     targets {
         register("jvm")
-//        register("macosArm64")
+        register("macosArm64")
     }
 }
 
