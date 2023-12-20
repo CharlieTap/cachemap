@@ -107,10 +107,6 @@ class LeftRightNativeTest {
                 staticCFunction { tdp ->
                     val td = tdp?.asStableRef<ThreadData>()?.get()
 
-                    println("pthread id" + pthread_self().toLong())
-                    println("pthread idx: " + td?.leftRight?.readEpochIdx?.value())
-                    println("pthread value: " + td?.leftRight?.readEpoch?.value())
-
                     td?.result = td?.leftRight?.read { it }
                     td?.epoch = td?.leftRight?.readEpoch?.value() ?: 0
                     null
@@ -123,13 +119,6 @@ class LeftRightNativeTest {
         }
 
         assertEquals(mutableSetOf(1), threadData.result)
-        println("test thread id" + pthread_self().toLong())
-        println("test thread idx: " + leftRight.readEpochIdx.value())
-        println("test thread value: " + leftRight.readEpoch.value())
-        println(leftRight.allEpochs.size)
-        leftRight.allEpochs.forEach {
-            println(it.value())
-        }
         assertEquals(0, leftRight.readEpoch.value()) // first threads epoch remains
         assertEquals(2, threadData.epoch) // spawned threads epoch increments
         writeMutex.unlock()
