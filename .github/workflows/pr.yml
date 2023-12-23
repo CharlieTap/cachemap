@@ -9,6 +9,9 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        os: [ macos-latest, ubuntu-latest ]
     uses: ./.github/workflows/build.yml
     with:
-      runner: macos-latest
+      runner: ${{ matrix.os }}
