@@ -2,7 +2,7 @@
 
 version-name = "0.2.4"
 
-java-compiler-version = "17"
+java-compiler-version = "21"
 java-bytecode-version = "11"
 java-vendor = "amazon"
 
