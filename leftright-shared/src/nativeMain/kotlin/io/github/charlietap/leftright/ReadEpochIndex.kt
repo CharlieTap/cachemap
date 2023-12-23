@@ -9,6 +9,7 @@ private class NativeReadEpochIndex(val initializer: () -> Int) : ReadEpochIndex 
     init {
         idx = null
     }
+
     override fun value(): Int {
         if (idx == null) {
             idx = initializer()

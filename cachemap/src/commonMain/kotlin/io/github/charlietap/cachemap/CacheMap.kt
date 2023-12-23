@@ -3,10 +3,15 @@ package io.github.charlietap.cachemap
 interface CacheMap<K, V> : Map<K, V> {
 
     operator fun set(key: K, value: V)
+
     fun put(key: K, value: V)
+
     fun putAll(from: Map<out K, V>)
+
     fun remove(key: K): V?
+
     fun remove(key: K, value: V): Boolean
+
     fun clear()
 }
 

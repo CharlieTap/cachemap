@@ -10,7 +10,6 @@ import kotlinx.cinterop.asStableRef
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.staticCFunction
-import kotlinx.cinterop.toLong
 import kotlinx.cinterop.value
 import platform.posix.PTHREAD_CREATE_JOINABLE
 import platform.posix.pthread_attr_destroy
@@ -19,7 +18,6 @@ import platform.posix.pthread_attr_setdetachstate
 import platform.posix.pthread_attr_t
 import platform.posix.pthread_create
 import platform.posix.pthread_join
-import platform.posix.pthread_self
 import platform.posix.pthread_tVar
 import platform.posix.sleep
 import kotlin.test.Test

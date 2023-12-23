@@ -12,17 +12,26 @@ insert_final_newline = true
 
 [*.{kt,kts}]
 
-max_line_length=160
+max_line_length = 160
 
 ktlint_code_style = ktlint_official
 ktlint_ignore_back_ticked_identifier = true
 
 ktlint_standard = enabled
-ktlint_standard_filename = disabled
-ktlint_standard_no-empty-first-line-in-class-body = disabled
-ktlint_standard_string-template-indent = disabled
-ktlint_standard_multiline-expression-wrapping = disabled
+
 ktlint_standard_function-signature = default
+ktlint_standard_class-naming = disabled
+ktlint_standard_class-signature = disabled
+ktlint_standard_filename = disabled
+ktlint_standard_function-expression-body = disabled
+ktlint_standard_function-naming = disabled
+ktlint_standard_function-signature = disabled
+ktlint_standard_max-line-length = disabled
+ktlint_standard_no-empty-first-line-in-class-body = disabled
+ktlint_standard_no-empty-first-line-in-method-block = disabled
+ktlint_standard_multiline-expression-wrapping = disabled
+ktlint_standard_property-naming = disabled
+ktlint_standard_string-template-indent = disabled
 
 ij_kotlin_allow_trailing_comma = true
 ij_kotlin_allow_trailing_comma_on_call_site = true
