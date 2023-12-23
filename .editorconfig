@@ -19,6 +19,10 @@ ktlint_ignore_back_ticked_identifier = true
 
 ktlint_standard = enabled
 ktlint_standard_filename = disabled
+ktlint_standard_no-empty-first-line-in-class-body = disabled
+ktlint_standard_string-template-indent = disabled
+ktlint_standard_multiline-expression-wrapping = disabled
+ktlint_standard_function-signature = default
 
 ij_kotlin_allow_trailing_comma = true
 ij_kotlin_allow_trailing_comma_on_call_site = true
