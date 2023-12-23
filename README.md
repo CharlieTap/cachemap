@@ -5,6 +5,7 @@
 ![badge][badge-ios]
 ![badge][badge-linux]
 ![badge][badge-mac]
+![badge][badge-windows]
 
 ---
 
@@ -155,3 +156,4 @@ This project is dual-licensed under both the MIT and Apache 2.0 licenses. You ca
 [badge-linux]: http://img.shields.io/badge/-linux-2D3F6C.svg?style=flat
 [badge-ios]: http://img.shields.io/badge/-ios-CDCDCD.svg?style=flat
 [badge-mac]: http://img.shields.io/badge/-macos-111111.svg?style=flat
+[badge-windows]: http://img.shields.io/badge/-windows-4D76CD.svg?style=flat
