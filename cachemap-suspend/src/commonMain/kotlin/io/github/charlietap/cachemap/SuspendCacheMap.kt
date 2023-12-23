@@ -3,9 +3,13 @@ package io.github.charlietap.cachemap
 interface SuspendCacheMap<K, V> : Map<K, V> {
 
     suspend fun put(key: K, value: V)
+
     suspend fun putAll(from: Map<out K, V>)
+
     suspend fun remove(key: K): V?
+
     suspend fun remove(key: K, value: V): Boolean
+
     suspend fun clear()
 }
 
