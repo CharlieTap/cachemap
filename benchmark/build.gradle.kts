@@ -21,7 +21,7 @@ plugins {
     alias(libs.plugins.kotlin.allopen)
     alias(libs.plugins.kotlin.atomic.fu)
     alias(libs.plugins.kotlin.benchmark)
-    alias(libs.plugins.kotlinter)
+    id("linting-conventions")
 }
 
 allOpen {

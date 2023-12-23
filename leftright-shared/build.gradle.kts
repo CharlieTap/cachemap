@@ -5,8 +5,8 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.atomic.fu)
-    alias(libs.plugins.kotlinter)
     id("kmp-conventions")
+    id("linting-conventions")
     id("publishing-conventions")
 }
 

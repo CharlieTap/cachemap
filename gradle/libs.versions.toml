@@ -25,7 +25,7 @@ junit = "4.13.2"
 
 kotlin = "1.9.21"
 kpoet = "1.14.2"
-kotlinter = "3.15.0"
+kotlinter = "4.1.0"
 kot-compile-testing = "1.5.0"
 
 kotlinx-atomic-fu = "0.23.1"
@@ -114,7 +114,7 @@ uuid = { module = "com.benasher44:uuid", version.ref = "uuid"}
 
 dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 gradle-versions-plugin = { module = "com.github.ben-manes:gradle-versions-plugin", version.ref = "versions-plugin" }
-kotlinter-plugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }
+kotlinter-gradle-plugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
 [bundles]
