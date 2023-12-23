@@ -7,7 +7,7 @@ plugins {
 
 val libs = the<LibrariesForLibs>()
 
-fun KotlinMultiplatformExtension.nativeTargets() = setOf(
+fun KotlinMultiplatformExtension.unixTargets() = setOf(
     macosArm64(),
     macosX64(),
     iosArm64(),
@@ -16,6 +16,10 @@ fun KotlinMultiplatformExtension.nativeTargets() = setOf(
     linuxArm64(),
     linuxX64(),
 )
+
+fun KotlinMultiplatformExtension.nativeTargets() = setOf(
+    mingwX64()
+) + unixTargets()
 
 kotlin {
 

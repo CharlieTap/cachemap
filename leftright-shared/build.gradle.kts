@@ -1,4 +1,5 @@
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -10,17 +11,23 @@ plugins {
     id("publishing-conventions")
 }
 
+fun KotlinMultiplatformExtension.unixTargets() = setOf(
+    macosArm64(),
+    macosX64(),
+    iosArm64(),
+    iosSimulatorArm64(),
+    iosX64(),
+    linuxArm64(),
+    linuxX64(),
+)
+
+fun KotlinMultiplatformExtension.nativeTargets() = setOf(
+    mingwX64()
+) + unixTargets()
+
 kotlin {
 
-    setOf(
-        macosArm64(),
-        macosX64(),
-        iosArm64(),
-        iosSimulatorArm64(),
-        iosX64(),
-        linuxArm64(),
-        linuxX64(),
-    ).forEach {
+    nativeTargets().forEach {
         it.compilations.getByName("main") {
             cinterops {
                 val libcounter by creating {
@@ -29,15 +36,26 @@ kotlin {
             }
         }
     }
+    applyDefaultHierarchyTemplate()
 
     sourceSets {
-       commonMain {
+        commonMain {
             dependencies {}
         }
 
         commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
+            }
+        }
+
+        val unixMain by creating {
+            dependsOn(commonMain.get())
+        }
+
+        unixTargets().forEach { target ->
+            target.compilations.getByName("main").defaultSourceSet {
+                dependsOn(unixMain)
             }
         }
     }
