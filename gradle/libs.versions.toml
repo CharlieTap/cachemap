@@ -11,20 +11,14 @@ versions-plugin = "0.47.0"
 
 androidx-collection = "1.3.0-alpha04"
 
-autoservice-annotations = "1.1.1"
-autoservice-ksp = "1.1.0"
-
 dependency-analysis="1.18.0"
 dokka="1.9.10"
 
 faker = "1.14.0"
 
-hlc = "1.1.0"
-
 junit = "4.13.2"
 
-kotlin = "1.9.21"
-kpoet = "1.14.2"
+kotlin = "1.9.22"
 kotlinter = "4.1.0"
 kot-compile-testing = "1.5.0"
 
@@ -33,18 +27,6 @@ kotlinx-benchmark = "0.4.10"
 kotlinx-coroutines = "1.7.3"
 kotlinx-datetime = "0.4.0"
 kotlinx-serialization = "1.5.1"
-
-logback = "1.3.0"
-murmurhash = "0.4.0"
-
-okhttp-logging-interceptor = "4.10.0"
-okio="3.4.0"
-retrofit-core="2.9.0"
-retrofit-serialization = "0.8.0"
-
-result = "1.1.16"
-sqldelight = "2.0.0"
-uuid = "0.8.0"
 
 [plugins]
 
@@ -62,27 +44,18 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-atomic-fu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin"  }
 kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter"  }
-sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
-
 
 [libraries]
 
 androidx-collections-kmp = { module = "androidx.collection:collection", version.ref = "androidx-collection" }
 
-autoservice-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoservice-annotations"}
-autoservice-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", version.ref = "autoservice-ksp"}
-
 faker = { module = "io.github.serpro69:kotlin-faker", version.ref = "faker"}
-
-hlc = { module = "com.github.charlietap:hlc", version.ref = "hlc"}
 
 junit = { module = "junit:junit", version.ref = "junit"}
 
 kotlin-compile-testing-core = { module = "com.github.tschuchortdev:kotlin-compile-testing", version.ref = "kot-compile-testing"}
 kotlin-compile-testing-ksp = { module = "com.github.tschuchortdev:kotlin-compile-testing-ksp", version.ref = "kot-compile-testing"}
 kotlin-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin"}
-kotlin-poet-core = { module = "com.squareup:kotlinpoet", version.ref = "kpoet"}
-kotlin-poet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kpoet"}
 kotlin-reflection = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin"}
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin"}
 
@@ -94,28 +67,9 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines"}
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines"}
 
-
-logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback"}
-murmurhash = { module = "com.goncalossilva:murmurhash", version.ref = "murmurhash"}
-
-okhttp-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp-logging-interceptor"}
-okio = { module = "com.squareup.okio:okio", version.ref = "okio"}
-okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio"}
-retrofit-core = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit-core"}
-retrofit-serialization = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit-serialization"}
-
-result = { module = "com.michael-bull.kotlin-result:kotlin-result", version.ref = "result" }
-sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight"}
-sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight"}
-sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
-sqldelight-jvm-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
-sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
-uuid = { module = "com.benasher44:uuid", version.ref = "uuid"}
-
 dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 gradle-versions-plugin = { module = "com.github.ben-manes:gradle-versions-plugin", version.ref = "versions-plugin" }
 kotlinter-gradle-plugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
 [bundles]
-
