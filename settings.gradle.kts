@@ -8,6 +8,7 @@ pluginManagement {
     includeBuild("gradle/plugins/kmp-conventions")
     includeBuild("gradle/plugins/linting-conventions")
     includeBuild("gradle/plugins/publishing-conventions")
+    includeBuild("gradle/plugins/versions-conventions")
 }
 
 plugins {
