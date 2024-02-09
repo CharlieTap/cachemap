@@ -8,6 +8,9 @@ on:
         description: 'The machine runner the workflow should run on'
         default: macos-latest
         required: false
+    secrets:
+      CODECOV_TOKEN:
+        required: true
   workflow_dispatch:
     inputs:
       runner:
@@ -24,7 +27,7 @@ jobs:
       - name: Clone Repo
         uses: actions/checkout@v4
 
-      - name: Set up jdk@17
+      - name: Set up jdk@21
         uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
@@ -35,3 +38,9 @@ jobs:
 
       - name: Execute Gradle build
         run: ./gradlew build
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        env:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: CharlieTap/cachemap
