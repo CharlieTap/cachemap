@@ -8,6 +8,9 @@ on:
         description: 'The machine runner the workflow should run on'
         default: macos-latest
         required: false
+    secrets:
+      CODECOV_TOKEN:
+        required: true
   workflow_dispatch:
     inputs:
       runner:
