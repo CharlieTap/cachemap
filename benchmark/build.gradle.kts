@@ -8,6 +8,10 @@ plugins {
     alias(libs.plugins.conventions.linting)
 }
 
+val isMacOsArm64Host =
+    System.getProperty("os.name") == "Mac OS X" &&
+        System.getProperty("os.arch") in setOf("aarch64", "arm64")
+
 allOpen {
     annotation("org.openjdk.jmh.annotations.State")
     annotation("kotlinx.benchmark.State")
@@ -16,7 +20,9 @@ allOpen {
 benchmark {
     targets {
         register("jvm")
-        register("macosArm64")
+        if (isMacOsArm64Host) {
+            register("macosArm64")
+        }
     }
 }
 
