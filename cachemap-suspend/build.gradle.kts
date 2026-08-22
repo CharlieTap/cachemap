@@ -1,20 +1,14 @@
-import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.atomic.fu)
-    id("kmp-conventions")
-    id("linting-conventions")
-    id("publishing-conventions")
+    alias(libs.plugins.conventions.kmp)
+    alias(libs.plugins.conventions.linting)
+    alias(libs.plugins.conventions.publishing)
 }
 
 kotlin {
 
     sourceSets {
 
-       commonMain {
+        commonMain {
             dependencies {
                 implementation(projects.leftrightSuspend)
             }
@@ -26,20 +20,10 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.test)
             }
         }
-
-        jvmMain {
-            dependencies {
-
-            }
-        }
     }
 }
 
 configure<PublishingConventionsExtension> {
     name = "cachemap-suspend"
     description = "A read optimised suspending concurrent map for Kotlin Multiplatform"
-}
-
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = libs.versions.java.bytecode.version.get()
 }

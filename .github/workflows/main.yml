@@ -4,12 +4,51 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '**/*.md'
 
 jobs:
-  build:
+
+  lint:
+    uses: ./.github/workflows/task-runner.yml
+    with:
+      runner: ubuntu-24.04-arm
+      task: lintKotlin
+    secrets: inherit
+
+  metadata:
+    uses: ./.github/workflows/task-runner.yml
+    with:
+      runner: ubuntu-24.04-arm
+      task: compileCommonMainKotlinMetadata
+    secrets: inherit
+
+  test:
+    name: ${{ matrix.name }}
     strategy:
+      fail-fast: false
       matrix:
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
-    uses: ./.github/workflows/build.yml
+        include:
+          - name: JVM (Linux ARM64)
+            os: ubuntu-24.04-arm
+            task: jvmTest
+          - name: Linux ARM64
+            os: ubuntu-24.04-arm
+            task: linuxArm64Test
+          - name: Linux x64
+            os: ubuntu-latest
+            task: linuxX64Test
+          - name: macOS and iOS Simulator ARM64
+            os: macos-latest
+            task: macosArm64Test iosSimulatorArm64Test
+          - name: Apple compatibility compilation
+            os: macos-latest
+            task: compileKotlinMacosX64 compileKotlinIosX64 compileKotlinIosArm64
+          - name: MinGW x64
+            os: windows-latest
+            task: mingwX64Test
+    uses: ./.github/workflows/task-runner.yml
     with:
       runner: ${{ matrix.os }}
+      task: ${{ matrix.task }}
+    secrets: inherit

@@ -5,33 +5,31 @@ pluginManagement {
         mavenCentral()
     }
 
-    includeBuild("gradle/plugins/kmp-conventions")
+    includeBuild("gradle/plugins/kotlin-conventions")
     includeBuild("gradle/plugins/linting-conventions")
     includeBuild("gradle/plugins/publishing-conventions")
     includeBuild("gradle/plugins/versions-conventions")
 }
 
 plugins {
-    id("com.gradle.enterprise") version ("3.15.1")
-    id("org.gradle.toolchains.foojay-resolver-convention") version("0.7.0")
+    id("com.gradle.develocity") version ("4.5.0")
+    id("org.gradle.toolchains.foojay-resolver-convention") version("1.0.0")
 }
 
-gradleEnterprise {
+develocity {
     buildScan {
-        termsOfServiceUrl = "https://gradle.com/terms-of-service"
-        termsOfServiceAgree = "yes"
+        termsOfUseUrl = "https://gradle.com/terms-of-service"
+        termsOfUseAgree = "yes"
 
-        publishAlwaysIf(!System.getenv("GITHUB_ACTIONS").isNullOrEmpty())
+        publishing.onlyIf { _ -> !System.getenv("GITHUB_ACTIONS").isNullOrEmpty() }
     }
 }
 
 dependencyResolutionManagement {
     repositories {
+        gradlePluginPortal()
         google()
         mavenCentral()
-        mavenLocal()
-        maven(url = "https://jitpack.io" )
-
     }
 }
 
@@ -45,3 +43,4 @@ include(":leftright-suspend")
 rootProject.name = "cachemap-multiplatform"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+enableFeaturePreview("ENHANCED_GRAPH_ORDERING")

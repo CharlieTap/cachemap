@@ -1,27 +1,11 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
-// temp fix for benchmark embedded compiler bug
-buildscript {
-    configurations.all {
-        resolutionStrategy {
-            eachDependency {
-                if (requested.group == "org.jetbrains.kotlin") {
-                    val kv = libs.versions.kotlin.get()
-                    logger.warn("${requested.group}:${requested.name}:${requested.version} --> $kv")
-                    useVersion(kv)
-                }
-            }
-        }
-    }
-}
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.allopen)
-    alias(libs.plugins.kotlin.atomic.fu)
     alias(libs.plugins.kotlin.benchmark)
-    id("linting-conventions")
+
+    alias(libs.plugins.conventions.kmp)
+    alias(libs.plugins.conventions.linting)
 }
 
 allOpen {
@@ -37,26 +21,17 @@ benchmark {
 }
 
 kotlin {
-
     jvm()
     macosArm64()
 
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(libs.versions.java.compiler.version.get().toInt()))
-        vendor.set(JvmVendorSpec.matching(libs.versions.java.vendor.get()))
-    }
-
-    targets.configureEach {
-        compilations.configureEach {
-            kotlinOptions {
-
-            }
+    targets.named<KotlinNativeTarget>("linuxArm64") {
+        binaries.executable("atomicCodegen") {
+            entryPoint = "io.github.charlietap.cachemap.benchmark.atomicCodegenMain"
         }
     }
 
     sourceSets {
-
-       commonMain {
+        commonMain {
             dependencies {
                 implementation(projects.cachemap)
                 implementation(projects.cachemapSuspend)
@@ -71,15 +46,10 @@ kotlin {
                 implementation(libs.kotlin.test)
             }
         }
-
         jvmMain {
             dependencies {
-
+                implementation(projects.leftrightShared)
             }
         }
     }
-}
-
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = libs.versions.java.bytecode.version.get()
 }

@@ -10,14 +10,13 @@ repositories {
 }
 
 dependencies {
-    implementation(gradleApi())
     implementation(libs.dokka.gradle.plugin)
+    implementation(libs.gradle.maven.publish.plugin)
 }
 
 kotlin {
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(libs.versions.java.compiler.version.get().toInt()))
-        vendor.set(JvmVendorSpec.matching(libs.versions.java.vendor.get()))
     }
 }
 

@@ -14,10 +14,15 @@ CacheMap is single writer concurrent hashmap implementation.
 Reads from the hashmap can proceed concurrently to writes from any thread with zero coordination necessary... No locks
 and no waits
 
-CacheMap implements `Map<K,V>` so can be used in place of existing map instances.
+CacheMap implements Kotlin's read-only `Map<K, V>` interface and provides familiar mutation operations, so it can be
+used like a normal map for individual reads and writes.
 
-CacheMap implements all of MutableMap<K,V> with the exception of `val entries: Set<Map.MutableEntry<K, V>>`
-as exposing MutableEntry's would allow mutation without the necessary write coordination.
+The exception is the `entries`, `keys`, and `values` properties. On a normal map, these return live views backed by the
+map's internal storage. CacheMap cannot safely allow those views to escape the protected read in which they were
+obtained, because the backing map may subsequently be mutated. These properties therefore throw
+`UnsupportedOperationException`.
+
+Instead, we provide the following replacement functions `forEach`, `forEachKey`, or `forEachValue`.
 
 CacheMap is ultimately a thin wrapper around the [left-right concurrency primitive](#leftright).
 

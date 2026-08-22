@@ -1,20 +1,14 @@
-import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.atomic.fu)
-    id("kmp-conventions")
-    id("linting-conventions")
-    id("publishing-conventions")
+    alias(libs.plugins.conventions.kmp)
+    alias(libs.plugins.conventions.linting)
+    alias(libs.plugins.conventions.publishing)
 }
 
 kotlin {
 
     sourceSets {
 
-       commonMain {
+        commonMain {
             dependencies {
                 api(projects.leftrightShared)
                 api(libs.kotlinx.atomic.fu)
@@ -26,13 +20,6 @@ kotlin {
                 implementation(libs.kotlin.test)
             }
         }
-
-        jvmMain {
-            dependencies {
-
-            }
-        }
-
         nativeTest {
             languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
         }
@@ -42,8 +29,4 @@ kotlin {
 configure<PublishingConventionsExtension> {
     name = "leftright"
     description = "A read optimised concurrency primitive for Kotlin Multiplatform"
-}
-
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = libs.versions.java.bytecode.version.get()
 }

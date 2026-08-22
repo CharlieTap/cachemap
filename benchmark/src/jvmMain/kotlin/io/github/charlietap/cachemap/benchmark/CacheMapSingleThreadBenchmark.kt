@@ -6,6 +6,7 @@ import org.openjdk.jmh.annotations.Fork
 import org.openjdk.jmh.annotations.Level
 import org.openjdk.jmh.annotations.Measurement
 import org.openjdk.jmh.annotations.Mode
+import org.openjdk.jmh.annotations.OperationsPerInvocation
 import org.openjdk.jmh.annotations.OutputTimeUnit
 import org.openjdk.jmh.annotations.Scope
 import org.openjdk.jmh.annotations.Setup
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit
 class CacheMapSingleThreadBenchmark {
 
     private val cacheMap = cacheMapOf<String, String>()
+    private val anotherMap = mapOf("Hello" to "World", "SecondKey" to "SecondValue")
 
     @Setup(Level.Iteration)
     fun setup() {
@@ -45,8 +47,13 @@ class CacheMapSingleThreadBenchmark {
     }
 
     @Benchmark
+    fun overwriteDistinct(thread: ThreadIndexState, blackhole: Blackhole) {
+        val result = cacheMap.put(thread.key, "value2")
+        blackhole.consume(result)
+    }
+
+    @Benchmark
     fun putAll(blackhole: Blackhole) {
-        val anotherMap = mapOf("Hello" to "World", "SecondKey" to "SecondValue")
         val result = cacheMap.putAll(anotherMap)
         blackhole.consume(result)
     }
@@ -67,6 +74,15 @@ class CacheMapSingleThreadBenchmark {
     fun remove(blackhole: Blackhole) {
         val result = cacheMap.remove("key1")
         blackhole.consume(result)
+    }
+
+    @Benchmark
+    @OperationsPerInvocation(100)
+    fun readMostly(blackhole: Blackhole) {
+        repeat(99) {
+            blackhole.consume(cacheMap["key1"])
+        }
+        blackhole.consume(cacheMap.put("key1", "value1"))
     }
 
     @Benchmark

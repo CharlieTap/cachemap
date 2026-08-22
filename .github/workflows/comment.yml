@@ -6,11 +6,15 @@ on:
 jobs:
   derive-branch:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
     outputs:
       branch: ${{ steps.set-output.outputs.branch }}
     steps:
       - id: set-output
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        run: echo "branch=$(gh api "/repos/${GITHUB_REPOSITORY}/pulls/${{ github.event.issue.number }}" --jq .head.ref)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
 
   benchmark:
     needs: derive-branch
@@ -18,8 +22,7 @@ jobs:
     permissions:
       contents: write
     with:
-      runner: macos-13
+      runner: macos-latest
       branch: ${{ needs.derive-branch.outputs.branch }}
       should-commit-benchmark: true
     uses: ./.github/workflows/benchmark.yml
-

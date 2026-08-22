@@ -6,6 +6,7 @@ import org.openjdk.jmh.annotations.Fork
 import org.openjdk.jmh.annotations.Level
 import org.openjdk.jmh.annotations.Measurement
 import org.openjdk.jmh.annotations.Mode
+import org.openjdk.jmh.annotations.OperationsPerInvocation
 import org.openjdk.jmh.annotations.OutputTimeUnit
 import org.openjdk.jmh.annotations.Scope
 import org.openjdk.jmh.annotations.Setup
@@ -28,6 +29,7 @@ class RWHashMapSingleThreadedBenchmark {
 
     private val map = HashMap<String, String>()
     private val rwLock = ReentrantReadWriteLock()
+    private val anotherMap = mapOf("Hello" to "World", "SecondKey" to "SecondValue")
 
     @Setup(Level.Iteration)
     fun setup() {
@@ -53,8 +55,15 @@ class RWHashMapSingleThreadedBenchmark {
     }
 
     @Benchmark
+    fun overwriteDistinct(thread: ThreadIndexState, blackhole: Blackhole) {
+        val result = rwLock.write {
+            map.put(thread.key, "value2")
+        }
+        blackhole.consume(result)
+    }
+
+    @Benchmark
     fun putAll(blackhole: Blackhole) {
-        val anotherMap = mapOf("Hello" to "World", "SecondKey" to "SecondValue")
         rwLock.write {
             map.putAll(anotherMap)
         }
@@ -83,6 +92,15 @@ class RWHashMapSingleThreadedBenchmark {
             map.remove("key1")
         }
         blackhole.consume(result)
+    }
+
+    @Benchmark
+    @OperationsPerInvocation(100)
+    fun readMostly(blackhole: Blackhole) {
+        repeat(99) {
+            blackhole.consume(rwLock.read { map["key1"] })
+        }
+        blackhole.consume(rwLock.write { map.put("key1", "value1") })
     }
 
     @Benchmark

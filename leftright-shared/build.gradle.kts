@@ -1,36 +1,18 @@
-import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.atomic.fu)
-    id("kmp-conventions")
-    id("linting-conventions")
-    id("publishing-conventions")
+    alias(libs.plugins.conventions.kmp)
+    alias(libs.plugins.conventions.linting)
+    alias(libs.plugins.conventions.publishing)
 }
 
-fun KotlinMultiplatformExtension.unixTargets() = setOf(
-    macosArm64(),
-    macosX64(),
-    iosArm64(),
-    iosSimulatorArm64(),
-    iosX64(),
-    linuxArm64(),
-    linuxX64(),
-)
-
-fun KotlinMultiplatformExtension.nativeTargets() = setOf(
-    mingwX64()
-) + unixTargets()
-
 kotlin {
+    val nativeTargets = targets.withType<KotlinNativeTarget>()
 
-    nativeTargets().forEach {
-        it.compilations.getByName("main") {
+    nativeTargets.configureEach {
+        compilations.getByName("main") {
             cinterops {
-                val libcounter by creating {
+                create("libcounter") {
                     defFile(project.file("src/ffi/cinterop/libcounter.def"))
                 }
             }
@@ -49,14 +31,12 @@ kotlin {
             }
         }
 
-        val unixMain by creating {
+        val unixMain = create("unixMain") {
             dependsOn(commonMain.get())
         }
 
-        unixTargets().forEach { target ->
-            target.compilations.getByName("main").defaultSourceSet {
-                dependsOn(unixMain)
-            }
+        nativeTargets.matching { it.name != "mingwX64" }.configureEach {
+            compilations.getByName("main").defaultSourceSet.dependsOn(unixMain)
         }
     }
 }
@@ -64,8 +44,4 @@ kotlin {
 configure<PublishingConventionsExtension> {
     name = "leftright-shared"
     description = "A shared runtime library exposing a read optimised concurrency primitive for Kotlin Multiplatform"
-}
-
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = libs.versions.java.bytecode.version.get()
 }
