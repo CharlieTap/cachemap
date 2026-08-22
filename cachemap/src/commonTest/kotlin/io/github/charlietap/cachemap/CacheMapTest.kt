@@ -105,7 +105,7 @@ class CacheMapTest {
 
     @Test
     fun `collection view properties are unsupported`() {
-        val cachemap = cacheMapOf("first" to "value")
+        val cachemap: Map<String, String> = cacheMapOf("first" to "value")
 
         assertFailsWith<UnsupportedOperationException> { cachemap.entries }
         assertFailsWith<UnsupportedOperationException> { cachemap.keys }
