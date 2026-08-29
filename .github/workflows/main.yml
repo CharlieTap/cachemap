@@ -36,9 +36,9 @@ jobs:
           - name: JVM (Linux ARM64)
             os: ubuntu-24.04-arm
             task: jvmTest
-          - name: Linux ARM64
-            os: ubuntu-24.04-arm
-            task: linuxArm64Test
+          - name: Linux ARM64 compilation
+            os: ubuntu-latest
+            task: compileKotlinLinuxArm64
           - name: Linux x64
             os: ubuntu-latest
             task: linuxX64Test

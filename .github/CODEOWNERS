@@ -2,6 +2,7 @@
 # another maintainer. Both current maintainers are listed so neither can approve
 # their own pull request.
 /.github/workflows/ @CharlieTap @JackThomson2
+/.github/codeql-config.yml @CharlieTap @JackThomson2
 /.github/CODEOWNERS @CharlieTap @JackThomson2
 /.github/SECURITY.md @CharlieTap @JackThomson2
 /gradle/ @CharlieTap @JackThomson2
