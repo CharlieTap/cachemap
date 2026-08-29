@@ -67,42 +67,81 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Clone target commit
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-        with:
-          ref: ${{ inputs.ref }}
-          fetch-depth: 0
-
       - name: Download benchmark reports
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: reports-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/benchmark-reports
 
-      - name: Commit benchmark reports only
+      - name: Commit benchmark reports through the GitHub API
         shell: bash
         env:
+          GH_TOKEN: ${{ github.token }}
           REPORTS_DIR: ${{ runner.temp }}/benchmark-reports
+          REPOSITORY: ${{ github.repository }}
           SOURCE_SHA: ${{ inputs.ref }}
           TARGET_BRANCH: ${{ inputs.target-branch }}
         run: |
           set -euo pipefail
 
-          remote_sha="$(git ls-remote --heads origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')"
+          if [[ ! "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Invalid source commit SHA" >&2
+            exit 1
+          fi
+          if ! git check-ref-format --branch "$TARGET_BRANCH" >/dev/null; then
+            echo "Invalid target branch" >&2
+            exit 1
+          fi
+
+          remote_sha="$(gh api "repos/${REPOSITORY}/git/ref/heads/${TARGET_BRANCH}" --jq '.object.sha')"
           if [[ -z "$remote_sha" || "$remote_sha" != "$SOURCE_SHA" ]]; then
             echo "Target branch moved or no longer exists; refusing to push benchmark reports" >&2
             exit 1
           fi
 
-          mkdir -p benchmark/reports
+          base_tree="$(gh api "repos/${REPOSITORY}/git/commits/${SOURCE_SHA}" --jq '.tree.sha')"
+          tree_entries="$(mktemp)"
+          trap 'rm -f "$tree_entries"' EXIT
+
           copied=0
+          declare -A seen_filenames=()
           while IFS= read -r -d '' report; do
             filename="$(basename "$report")"
             if [[ ! "$filename" =~ ^[A-Za-z0-9._-]+\.(csv|json)$ ]]; then
               echo "Unexpected report filename: $filename" >&2
               exit 1
             fi
-            cp -- "$report" "benchmark/reports/$filename"
+            if [[ -n "${seen_filenames[$filename]:-}" ]]; then
+              echo "Duplicate report filename: $filename" >&2
+              exit 1
+            fi
+            seen_filenames[$filename]=1
+
+            size="$(wc -c < "$report")"
+            if (( size > 10485760 )); then
+              echo "Report exceeds the 10 MiB limit: $filename" >&2
+              exit 1
+            fi
+            if ! iconv -f UTF-8 -t UTF-8 "$report" >/dev/null; then
+              echo "Report is not valid UTF-8: $filename" >&2
+              exit 1
+            fi
+            if [[ "$filename" == *.json ]] && ! jq empty "$report"; then
+              echo "Report is not valid JSON: $filename" >&2
+              exit 1
+            fi
+
+            blob_sha="$(
+              gh api --method POST "repos/${REPOSITORY}/git/blobs" \
+                -f encoding=utf-8 \
+                -F "content=@${report}" \
+                --jq '.sha'
+            )"
+            jq -cn \
+              --arg path "benchmark/reports/${filename}" \
+              --arg sha "$blob_sha" \
+              '{path: $path, mode: "100644", type: "blob", sha: $sha}' \
+              >> "$tree_entries"
             copied=$((copied + 1))
           done < <(find "$REPORTS_DIR" -type f \( -iname '*benchmark.json' -o -iname '*benchmark.csv' \) -print0)
 
@@ -111,12 +150,23 @@ jobs:
             exit 1
           fi
 
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add -- benchmark/reports
-          if git diff --cached --quiet; then
+          tree_sha="$(
+            jq -s --arg base_tree "$base_tree" '{base_tree: $base_tree, tree: .}' "$tree_entries" |
+              gh api --method POST "repos/${REPOSITORY}/git/trees" --input - --jq '.sha'
+          )"
+          if [[ "$tree_sha" == "$base_tree" ]]; then
             echo "Benchmark reports are unchanged"
             exit 0
           fi
-          git commit -m "benchmark: update reports"
-          git push origin "HEAD:refs/heads/${TARGET_BRANCH}"
+
+          commit_sha="$(
+            jq -cn \
+              --arg message 'benchmark: update reports' \
+              --arg tree "$tree_sha" \
+              --arg parent "$SOURCE_SHA" \
+              '{message: $message, tree: $tree, parents: [$parent]}' |
+              gh api --method POST "repos/${REPOSITORY}/git/commits" --input - --jq '.sha'
+          )"
+
+          jq -cn --arg sha "$commit_sha" '{sha: $sha, force: false}' |
+            gh api --method PATCH "repos/${REPOSITORY}/git/refs/heads/${TARGET_BRANCH}" --input - >/dev/null
