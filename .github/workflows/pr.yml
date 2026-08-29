@@ -7,6 +7,9 @@ on:
     paths-ignore:
       - '**/*.md'
 
+permissions:
+  contents: read
+
 jobs:
 
   lint:
@@ -14,14 +17,12 @@ jobs:
     with:
       runner: ubuntu-24.04-arm
       task: lintKotlin
-    secrets: inherit
 
   metadata:
     uses: ./.github/workflows/task-runner.yml
     with:
       runner: ubuntu-24.04-arm
       task: compileCommonMainKotlinMetadata
-    secrets: inherit
 
   test:
     name: ${{ matrix.name }}
@@ -51,4 +52,3 @@ jobs:
     with:
       runner: ${{ matrix.os }}
       task: ${{ matrix.task }}
-    secrets: inherit

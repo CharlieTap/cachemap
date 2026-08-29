@@ -7,6 +7,9 @@ on:
     paths-ignore:
       - '**/*.md'
 
+permissions:
+  contents: read
+
 jobs:
 
   lint:
@@ -14,34 +17,44 @@ jobs:
     with:
       runner: ubuntu-24.04-arm
       task: lintKotlin
-    secrets: inherit
+    secrets:
+      gradle_encryption_key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
   metadata:
     uses: ./.github/workflows/task-runner.yml
     with:
       runner: ubuntu-24.04-arm
       task: compileCommonMainKotlinMetadata
-    secrets: inherit
+    secrets:
+      gradle_encryption_key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
   test:
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-24.04-arm
+          - name: JVM (Linux ARM64)
+            os: ubuntu-24.04-arm
             task: jvmTest
-          - os: ubuntu-latest
-            task: compileKotlinLinuxArm64
-          - os: ubuntu-latest
+          - name: Linux ARM64
+            os: ubuntu-24.04-arm
+            task: linuxArm64Test
+          - name: Linux x64
+            os: ubuntu-latest
             task: linuxX64Test
-          - os: macos-latest
+          - name: macOS and iOS Simulator ARM64
+            os: macos-latest
             task: macosArm64Test iosSimulatorArm64Test
-          - os: macos-latest
+          - name: Apple compatibility compilation
+            os: macos-latest
             task: compileKotlinMacosX64 compileKotlinIosX64 compileKotlinIosArm64
-          - os: windows-latest
+          - name: MinGW x64
+            os: windows-latest
             task: mingwX64Test
+    name: ${{ matrix.name }}
     uses: ./.github/workflows/task-runner.yml
     with:
       runner: ${{ matrix.os }}
       task: ${{ matrix.task }}
-    secrets: inherit
+    secrets:
+      gradle_encryption_key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}

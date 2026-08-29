@@ -8,76 +8,115 @@ on:
         description: 'The machine runner the workflow should run on'
         default: macos-latest
         required: false
-      branch:
+      ref:
         type: string
-        description: 'The branch to be benchmarked'
+        description: 'The immutable commit SHA to benchmark'
+        required: true
+      target-branch:
+        type: string
+        description: 'The same-repository branch that may receive benchmark reports'
         required: true
       should-commit-benchmark:
         type: boolean
-        description: 'If the produced report should be commited to the active branch'
+        description: 'Whether produced reports should be committed to the target branch'
         default: false
         required: false
-  workflow_dispatch:
-    inputs:
-      runner:
-        type: string
-        description: 'The machine runner the workflow should run on'
-        default: macos-latest
-        required: true
-      branch:
-        type: string
-        description: 'The branch to be benchmarked'
-        required: true
-      should-commit-benchmark:
-        type: boolean
-        description: 'If the produced report should be committed to the active branch'
-        default: false
-        required: false
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ${{ inputs.runner }}
     permissions:
-      contents: write
+      contents: read
     steps:
-
       - name: Clone Repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
-          ref: ${{ inputs.branch }}
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
 
       - name: Set up JDK 25
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: 'temurin'
           java-version: '25'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5
         with:
-          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          cache-read-only: true
 
-      - name: Execute Gradle build
+      - name: Execute Gradle benchmark
         run: ./gradlew benchmark --no-configuration-cache
 
-      - name: Upload any new reports
-        uses: actions/upload-artifact@v4
+      - name: Upload benchmark reports
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: reports
+          name: reports-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             **/build/**/*Benchmark.csv
             **/build/**/*Benchmark.json
+          if-no-files-found: error
 
-      - name: Move benchmark files
+  commit:
+    needs: build
+    if: ${{ inputs.should-commit-benchmark }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Clone target commit
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 0
+
+      - name: Download benchmark reports
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/benchmark-reports
+
+      - name: Commit benchmark reports only
+        shell: bash
+        env:
+          REPORTS_DIR: ${{ runner.temp }}/benchmark-reports
+          SOURCE_SHA: ${{ inputs.ref }}
+          TARGET_BRANCH: ${{ inputs.target-branch }}
         run: |
+          set -euo pipefail
+
+          remote_sha="$(git ls-remote --heads origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')"
+          if [[ -z "$remote_sha" || "$remote_sha" != "$SOURCE_SHA" ]]; then
+            echo "Target branch moved or no longer exists; refusing to push benchmark reports" >&2
+            exit 1
+          fi
+
           mkdir -p benchmark/reports
-          find benchmark -type f \( -iname '*benchmark.json' -o -iname '*benchmark.csv' \) -exec mv {} ./benchmark/reports/ \;
+          copied=0
+          while IFS= read -r -d '' report; do
+            filename="$(basename "$report")"
+            if [[ ! "$filename" =~ ^[A-Za-z0-9._-]+\.(csv|json)$ ]]; then
+              echo "Unexpected report filename: $filename" >&2
+              exit 1
+            fi
+            cp -- "$report" "benchmark/reports/$filename"
+            copied=$((copied + 1))
+          done < <(find "$REPORTS_DIR" -type f \( -iname '*benchmark.json' -o -iname '*benchmark.csv' \) -print0)
 
-      - name: Commit benchmark files
-        if: ${{ inputs.should-commit-benchmark }}
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add benchmark/*
-          git commit -m "Commit benchmark results" -a
-          git push
+          if (( copied == 0 )); then
+            echo "No benchmark reports were downloaded" >&2
+            exit 1
+          fi
+
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -- benchmark/reports
+          if git diff --cached --quiet; then
+            echo "Benchmark reports are unchanged"
+            exit 0
+          fi
+          git commit -m "benchmark: update reports"
+          git push origin "HEAD:refs/heads/${TARGET_BRANCH}"

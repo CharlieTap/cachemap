@@ -1,28 +1,54 @@
 name: Pull Request Comment
+
 on:
   issue_comment:
-    types: [created, edited, deleted]
+    types: [created]
+
+permissions: {}
 
 jobs:
-  derive-branch:
+  derive-ref:
+    if: >-
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '/benchmark') &&
+      (github.event.comment.author_association == 'OWNER' ||
+       github.event.comment.author_association == 'COLLABORATOR' ||
+       github.event.comment.author_association == 'MEMBER')
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pull-requests: read
     outputs:
-      branch: ${{ steps.set-output.outputs.branch }}
+      ref: ${{ steps.pr.outputs.ref }}
+      branch: ${{ steps.pr.outputs.branch }}
     steps:
-      - id: set-output
-        run: echo "branch=$(gh api "/repos/${GITHUB_REPOSITORY}/pulls/${{ github.event.issue.number }}" --jq .head.ref)" >> "$GITHUB_OUTPUT"
+      - id: pr
+        name: Resolve and validate PR head
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          response="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")"
+          head_repository="$(jq -r '.head.repo.full_name' <<< "$response")"
+          if [[ "$head_repository" != "$GITHUB_REPOSITORY" ]]; then
+            echo "Benchmarks that write reports are restricted to same-repository pull requests" >&2
+            exit 1
+          fi
+          echo "ref=$(jq -r '.head.sha' <<< "$response")" >> "$GITHUB_OUTPUT"
+          echo "branch=$(jq -r '.head.ref' <<< "$response")" >> "$GITHUB_OUTPUT"
 
   benchmark:
-    needs: derive-branch
-    if: github.event.issue.pull_request && contains(github.event.comment.body, '/benchmark')
+    needs: derive-ref
     permissions:
       contents: write
+    concurrency:
+      group: benchmark-pr-${{ github.event.issue.number }}
+      cancel-in-progress: true
+    uses: ./.github/workflows/benchmark.yml
     with:
       runner: macos-latest
-      branch: ${{ needs.derive-branch.outputs.branch }}
+      ref: ${{ needs.derive-ref.outputs.ref }}
+      target-branch: ${{ needs.derive-ref.outputs.branch }}
       should-commit-benchmark: true
-    uses: ./.github/workflows/benchmark.yml
